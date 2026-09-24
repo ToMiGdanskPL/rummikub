@@ -85,7 +85,7 @@
         </div>
         <div>
           <h1 class="font-bold text-lg leading-tight tracking-wide text-white">Rummikub Timer</h1>
-          <p class="text-xs text-slate-400">Stoper tury i punktacja (Max 4 graczy)</p>
+          <p class="text-xs text-slate-400">Stoper tury i statystyki (Max 4 graczy)</p>
         </div>
       </div>
 
@@ -107,7 +107,7 @@
     <section id="setupView" class="w-full space-y-6 animate-fade-in">
       <div class="text-center space-y-2">
         <span class="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-amber-500/10 text-amber-400 border border-amber-500/20">Przygotowanie Stołu</span>
-        <h2 class="text-2xl sm:text-3xl font-extrabold text-white">Konfiguracja graczy i czasu</h2>
+        <h2 class="text-2xl sm:text-3xl font-extrabold text-white">Konfiguracja Graczy i Zasada Czasu</h2>
       </div>
 
       <div class="glass-panel rounded-2xl p-4 sm:p-6 space-y-4">
@@ -160,7 +160,7 @@
           </div>
         </div>
 
-        <!-- Chess 10 min Tile (Visible ONLY when 2 players are selected) -->
+        <!-- Chess Time Tile (Visible ONLY when 2 players are selected) -->
         <div id="chessTimeTile" class="p-3.5 rounded-xl border transition border-slate-700 bg-slate-800/60 flex items-center justify-between gap-3 hidden">
           <div onclick="selectChessTime()" class="cursor-pointer flex-grow flex items-center gap-3">
             <div class="w-10 h-10 rounded-lg bg-purple-500/20 text-purple-400 border border-purple-500/30 flex items-center justify-center font-bold text-lg">
@@ -193,7 +193,7 @@
             <h3 class="text-sm font-bold uppercase tracking-wider text-slate-400 flex items-center gap-2">
               <i class="fa-solid fa-users text-amber-400"></i> Uczestnicy (Max 4)
             </h3>
-            <p class="text-xs text-slate-400 mt-0.5">Ustaw ilość graczy, unikalne imiona, kolory i pozycje przy stole.</p>
+            <p class="text-xs text-slate-400 mt-0.5">Ustaw unikalne imiona, kolory i pozycje przy stole.</p>
           </div>
 
           <!-- Player Count Buttons (2, 3, 4 Max) -->
@@ -252,7 +252,7 @@
             <h2 id="activePlayerName" class="text-3xl sm:text-5xl font-black tracking-tight text-white drop-shadow-md">
               Gracz 1
             </h2>
-            <p id="activePlayerSubtext" class="text-xs font-medium text-slate-400 mt-1">Twoja tura - ułóż wyłożenie lub dobierz kostkę</p>
+            <p id="activePlayerSubtext" class="text-xs font-medium text-slate-400 mt-1">Twoja tura - ułóż wyłożenie lub pociągnij kostkę</p>
           </div>
 
           <!-- Circular Countdown Timer (Clickable to switch turn) -->
@@ -281,7 +281,7 @@
             <span id="pauseText">Pauza</span>
           </button>
 
-          <button onclick="returnToSetupLobby()" class="py-2.5 px-3 rounded-xl bg-red-950/40 hover:bg-red-900/60 text-red-300 font-semibold text-xs border border-red-800/50 flex items-center justify-center gap-1.5 transition active:scale-95">
+          <button onclick="finishGameSession()" class="py-2.5 px-3 rounded-xl bg-red-950/40 hover:bg-red-900/60 text-red-300 font-semibold text-xs border border-red-800/50 flex items-center justify-center gap-1.5 transition active:scale-95">
             <i class="fa-solid fa-flag text-red-400"></i> Zakończ grę
           </button>
         </div>
@@ -341,7 +341,7 @@
           <span id="chessPauseText">Pauza</span>
         </button>
 
-        <button onclick="returnToSetupLobby()" class="py-3 px-6 rounded-xl bg-red-950/40 hover:bg-red-900/60 text-red-300 font-bold text-sm border border-red-800/50 flex items-center justify-center gap-2">
+        <button onclick="finishGameSession()" class="py-3 px-6 rounded-xl bg-red-950/40 hover:bg-red-900/60 text-red-300 font-bold text-sm border border-red-800/50 flex items-center justify-center gap-2">
           <i class="fa-solid fa-flag text-red-400"></i> Zakończ grę
         </button>
       </div>
@@ -380,16 +380,16 @@
             <i class="fa-solid fa-chess-knight text-xs"></i> 2. Tryb szachowy (2 graczy)
           </h4>
           <p class="text-xs text-slate-400 leading-relaxed">
-            W trybie szachowym każdy z 2 graczy otrzymuje wspólny bank czasu (domyślnie 10 minut, regulowany co ±15s). Po wykonaniu ruchu dotyka swojego panelu, aby zatrzymać swój zegar i uruchomić zegar przeciwnika.
+            W trybie szachowym każdy z 2 graczy otrzymuje wspólny bank czasu. Po wykonaniu ruchu dotyka swojego panelu, aby zatrzymać swój zegar i uruchomić zegar przeciwnika.
           </p>
         </div>
 
         <div class="space-y-1.5">
           <h4 class="font-bold text-white flex items-center gap-2 text-emerald-400">
-            <i class="fa-solid fa-users text-xs"></i> 3. Szybkie przełączanie
+            <i class="fa-solid fa-users text-xs"></i> 3. Statystyki i Podsumowanie
           </h4>
           <p class="text-xs text-slate-400 leading-relaxed">
-            Możesz w każdej chwili zakończyć turę i przekazać ją kolejnemu graczowi, klikając na **duży okrągły timer** na środku ekranu lub na dolny przycisk „Zakończ turę”.
+            Po zakończeniu rozgrywki aplikacja wyświetli podsumowanie ze statystykami graczy (łączny czas gry oraz średni czas tury).
           </p>
         </div>
 
@@ -409,6 +409,32 @@
         </button>
       </div>
 
+    </div>
+  </div>
+
+  <!-- ==================== SUMMARY MODAL ==================== -->
+  <div id="summaryModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-md hidden p-4 animate-fade-in">
+    <div class="glass-panel bg-slate-900/95 border border-slate-700 rounded-3xl max-w-lg w-full max-h-[85vh] overflow-y-auto p-6 shadow-2xl space-y-5">
+      <div class="text-center space-y-1">
+        <div class="w-12 h-12 rounded-2xl bg-amber-500/20 text-amber-400 flex items-center justify-center font-bold text-xl mx-auto mb-2 border border-amber-500/30">
+          <i class="fa-solid fa-trophy"></i>
+        </div>
+        <h3 class="text-2xl font-black text-white">Podsumowanie Rozgrywki</h3>
+        <p class="text-xs text-slate-400">Statystyki zakończonej partii Rummikub</p>
+      </div>
+
+      <div id="summaryContentList" class="space-y-3">
+        <!-- Dynamically injected player stats -->
+      </div>
+
+      <div class="pt-3 border-t border-slate-800 flex gap-3">
+        <button onclick="closeSummaryModal()" class="w-full py-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-sm transition">
+          Powrót do menu
+        </button>
+        <button onclick="restartGameSameSettings()" class="w-full py-3 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-extrabold text-sm transition">
+          Zagraj ponownie
+        </button>
+      </div>
     </div>
   </div>
 
@@ -438,15 +464,16 @@
       isChessMode: false,
       soundEnabled: true,
       players: [
-        { id: 1, name: 'Gracz 1', colorHex: '#ef4444', rotation: 0, chessBank: 600 },
-        { id: 2, name: 'Gracz 2', colorHex: '#3b82f6', rotation: 180, chessBank: 600 },
-        { id: 3, name: 'Gracz 3', colorHex: '#f97316', rotation: 90, chessBank: 600 },
-        { id: 4, name: 'Gracz 4', colorHex: '#64748b', rotation: 270, chessBank: 600 }
+        { id: 1, name: 'Gracz 1', colorHex: '#ef4444', rotation: 0, chessBank: 600, turnsPlayed: 0, totalThinkingTime: 0 },
+        { id: 2, name: 'Gracz 2', colorHex: '#3b82f6', rotation: 180, chessBank: 600, turnsPlayed: 0, totalThinkingTime: 0 },
+        { id: 3, name: 'Gracz 3', colorHex: '#f97316', rotation: 90, chessBank: 600, turnsPlayed: 0, totalThinkingTime: 0 },
+        { id: 4, name: 'Gracz 4', colorHex: '#64748b', rotation: 270, chessBank: 600, turnsPlayed: 0, totalThinkingTime: 0 }
       ],
       activePlayerIndex: 0,
       roundNumber: 1,
       totalTurnsCount: 1,
       remainingTime: 60,
+      turnStartTime: Date.now(),
       isTimerRunning: false,
       timerInterval: null
     };
@@ -621,9 +648,9 @@
       }
 
       if (gameState.players.length >= 4) {
-        addPlayerBtn.classList.add('opacity-40', 'pointer-events-none');
+        addPlayerBtn.classList.add('hidden');
       } else {
-        addPlayerBtn.classList.remove('opacity-40', 'pointer-events-none');
+        addPlayerBtn.classList.remove('hidden');
       }
 
       updateStartButtonsVisibility();
@@ -733,7 +760,9 @@
             name: `Gracz ${i + 1}`,
             colorHex: available.hex,
             rotation: defaultRotations[i % defaultRotations.length],
-            chessBank: gameState.chessTime
+            chessBank: gameState.chessTime,
+            turnsPlayed: 0,
+            totalThinkingTime: 0
           });
         }
       } else if (count < currentCount) {
@@ -769,6 +798,8 @@
       gameState.players.forEach((p, idx) => {
         if (!p.name.trim()) p.name = `Gracz ${idx + 1}`;
         p.chessBank = gameState.chessTime;
+        p.turnsPlayed = 0;
+        p.totalThinkingTime = 0;
       });
 
       gameState.isChessMode = isChessMode;
@@ -776,6 +807,7 @@
       gameState.remainingTime = gameState.turnDuration;
       gameState.roundNumber = 1;
       gameState.totalTurnsCount = 1;
+      gameState.turnStartTime = Date.now();
 
       document.getElementById('setupView').classList.add('hidden');
 
@@ -794,6 +826,68 @@
       showToast('Gra rozpoczęta!');
     }
 
+    function finishGameSession() {
+      pauseTurnTimer();
+      recordCurrentTurnStats();
+      
+      const summaryList = document.getElementById('summaryContentList');
+      summaryList.innerHTML = '';
+
+      // Sort players by total thinking time ascending (lowest time first, highest time last)
+      const sortedPlayers = [...gameState.players].sort((a, b) => a.totalThinkingTime - b.totalThinkingTime);
+
+      sortedPlayers.forEach((p, idx) => {
+        const avgTime = p.turnsPlayed > 0 ? Math.round(p.totalThinkingTime / p.turnsPlayed) : 0;
+        const totalMinutes = Math.floor(p.totalThinkingTime / 60);
+        const totalSeconds = p.totalThinkingTime % 60;
+        const formattedTotalTime = `${totalMinutes}:${totalSeconds < 10 ? '0' : ''}${totalSeconds}`;
+
+        const item = document.createElement('div');
+        item.className = 'bg-slate-900/90 border border-slate-800 rounded-2xl p-4 flex items-center justify-between';
+        item.innerHTML = `
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl flex items-center justify-center font-black text-white shadow-md" style="background-color: ${p.colorHex}">
+              ${idx + 1}
+            </div>
+            <div>
+              <h4 class="font-extrabold text-white text-base">${p.name}</h4>
+              <p class="text-xs text-slate-400">Łączny czas gry: <span class="text-slate-200 font-bold font-mono">${formattedTotalTime}</span></p>
+            </div>
+          </div>
+          <div class="text-right">
+            <span class="text-xs font-bold text-amber-400 block">Śr. czas tury</span>
+            <span class="text-sm font-extrabold text-white font-mono">${avgTime}s</span>
+          </div>
+        `;
+        summaryList.appendChild(item);
+      });
+
+      const summaryModal = document.getElementById('summaryModal');
+      summaryModal.classList.remove('hidden');
+
+      try {
+        if (typeof confetti === 'function') {
+          confetti({
+            particleCount: 100,
+            spread: 70,
+            origin: { y: 0.6 }
+          });
+        }
+      } catch (e) {
+        console.warn('Confetti error:', e);
+      }
+    }
+
+    function closeSummaryModal() {
+      document.getElementById('summaryModal').classList.add('hidden');
+      returnToSetupLobby();
+    }
+
+    function restartGameSameSettings() {
+      document.getElementById('summaryModal').classList.add('hidden');
+      startGame(gameState.isChessMode);
+    }
+
     function returnToSetupLobby() {
       pauseTurnTimer();
       document.getElementById('gameView').classList.add('hidden');
@@ -801,9 +895,17 @@
       document.getElementById('setupView').classList.remove('hidden');
     }
 
+    function recordCurrentTurnStats() {
+      const activeP = getActivePlayer();
+      activeP.turnsPlayed++;
+      const elapsed = Math.round((Date.now() - gameState.turnStartTime) / 1000);
+      activeP.totalThinkingTime += elapsed;
+    }
+
     function startTurnTimer() {
       clearInterval(gameState.timerInterval);
       gameState.isTimerRunning = true;
+      gameState.turnStartTime = Date.now();
       updatePauseButtonUI();
 
       gameState.timerInterval = setInterval(() => {
@@ -868,6 +970,8 @@
     }
 
     function nextTurn() {
+      recordCurrentTurnStats();
+
       // Reset timer container scale immediately on turn change
       const timerContainer = document.getElementById('timerCircleContainer');
       if (timerContainer) {
@@ -875,6 +979,9 @@
       }
 
       gameState.activePlayerIndex = (gameState.activePlayerIndex + 1) % gameState.players.length;
+      if (gameState.activePlayerIndex === 0) {
+        gameState.roundNumber++;
+      }
       gameState.totalTurnsCount++;
       gameState.remainingTime = gameState.turnDuration;
 
