@@ -1,16 +1,18 @@
 <!DOCTYPE html>
-<html lang="pl" class="h-full bg-slate-900 text-slate-100">
+<html lang="pl" class="h-full bg-slate-950 text-slate-100">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Rummikub - Stoper i Punktacja</title>
+  <title>Rummikub Timer</title>
   
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- FontAwesome Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <!-- Tone.js for synthesized audio effects -->
+  <!-- Tone.js for sound effects -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
+  <!-- Canvas Confetti -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
   <script>
     tailwind.config = {
@@ -21,12 +23,10 @@
             rummiRed: '#ef4444',
             rummiBlue: '#3b82f6',
             rummiOrange: '#f97316',
-            rummiBlack: '#334155',
-            rummiYellow: '#eab308'
-          },
-          animation: {
-            'pulse-fast': 'pulse 0.8s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-            'bounce-short': 'bounce 0.5s ease-in-out 2'
+            rummiSlate: '#334155',
+            rummiYellow: '#eab308',
+            rummiEmerald: '#10b981',
+            rummiPurple: '#a855f7'
           }
         }
       }
@@ -44,7 +44,6 @@
       transition: stroke-dashoffset 0.25s linear, stroke 0.3s ease;
     }
 
-    /* Glassmorphism effects */
     .glass-panel {
       background: rgba(30, 41, 59, 0.7);
       backdrop-filter: blur(12px);
@@ -55,7 +54,6 @@
       box-shadow: 0 0 25px -5px var(--glow-color, rgba(59, 130, 246, 0.5));
     }
 
-    /* Custom scrollbar */
     ::-webkit-scrollbar {
       width: 6px;
       height: 6px;
@@ -71,11 +69,14 @@
     .timer-card-rotate {
       transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1), background-color 0.5s ease, border-color 0.5s ease, box-shadow 0.5s ease;
     }
+
+    .chess-split-card {
+      transition: all 0.3s ease;
+    }
   </style>
 </head>
 <body class="h-full flex flex-col justify-between overflow-x-hidden select-none bg-slate-950 text-slate-100">
 
-  <!-- Header Navigation -->
   <header class="w-full bg-slate-900/80 border-b border-slate-800 px-4 py-3 sticky top-0 z-40 backdrop-blur-md">
     <div class="max-w-4xl mx-auto flex items-center justify-between">
       <div class="flex items-center gap-3">
@@ -84,23 +85,22 @@
         </div>
         <div>
           <h1 class="font-bold text-lg leading-tight tracking-wide text-white">Rummikub Timer</h1>
-          <p class="text-xs text-slate-400">Licznik tury i punktacja</p>
+          <p class="text-xs text-slate-400">Stoper tury i punktacja (Max 4 graczy)</p>
         </div>
       </div>
 
       <div class="flex items-center gap-2">
-        <button id="soundToggleBtn" onclick="toggleSound()" class="p-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition flex items-center gap-2 text-sm border border-slate-700">
+        <button id="soundToggleBtn" onclick="toggleSound()" class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition flex items-center gap-2 text-sm border border-slate-700 h-[38px]">
           <i id="soundIcon" class="fa-solid fa-volume-high text-amber-400"></i>
           <span class="hidden sm:inline text-xs font-semibold">Dźwięk</span>
         </button>
-        <button id="resetAppBtn" onclick="confirmResetToLobby()" class="p-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-red-400 transition text-sm border border-slate-700" title="Ustawienia / Nowa Gra">
-          <i class="fa-solid fa-gear"></i>
+        <button id="infoModalBtn" onclick="openInfoModal()" class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-amber-400 transition flex items-center justify-center text-sm border border-slate-700 h-[38px]" title="Informacje i Instrukcja">
+          <i class="fa-solid fa-circle-info text-amber-400 text-base"></i>
         </button>
       </div>
     </div>
   </header>
 
-  <!-- Main Container -->
   <main class="flex-grow flex flex-col justify-center items-center p-3 sm:p-6 max-w-4xl w-full mx-auto">
 
     <!-- ==================== VIEW 1: SETUP LOBBY ==================== -->
@@ -108,94 +108,144 @@
       <div class="text-center space-y-2">
         <span class="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-amber-500/10 text-amber-400 border border-amber-500/20">Przygotowanie Stołu</span>
         <h2 class="text-2xl sm:text-3xl font-extrabold text-white">Konfiguracja Graczy i Zasada Czasu</h2>
-        <p class="text-slate-400 text-sm max-w-md mx-auto">Ustaw imiona, kolory i kolejność siedzenia przy stole. Gdy wszyscy będą gotowi, rozpocznijcie grę.</p>
       </div>
 
-      <!-- General Match Settings -->
       <div class="glass-panel rounded-2xl p-4 sm:p-6 space-y-4">
         <h3 class="text-sm font-bold uppercase tracking-wider text-slate-400 flex items-center gap-2">
           <i class="fa-solid fa-stopwatch text-amber-400"></i> Czas Tury
         </h3>
         
+        <!-- Standard Time Buttons Grid -->
         <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3">
-          <button onclick="setTurnDuration(30)" class="time-opt-btn p-3 rounded-xl border text-center transition font-semibold text-sm flex flex-col items-center gap-1 border-slate-700 bg-slate-800/60 hover:bg-slate-700" data-seconds="30">
+          <button onclick="selectPresetTime(30)" id="timeBtn30" class="time-opt-btn p-3 rounded-xl border text-center transition font-semibold text-sm flex flex-col items-center gap-1 border-slate-700 bg-slate-800/60 hover:bg-slate-700">
             <span class="text-lg">30s</span>
             <span class="text-[10px] text-slate-400 font-normal">Szybka gra</span>
           </button>
-          <button onclick="setTurnDuration(60)" class="time-opt-btn p-3 rounded-xl border text-center transition font-semibold text-sm flex flex-col items-center gap-1 border-amber-500 bg-amber-500/20 text-amber-300" data-seconds="60">
+          <button onclick="selectPresetTime(60)" id="timeBtn60" class="time-opt-btn p-3 rounded-xl border text-center transition font-semibold text-sm flex flex-col items-center gap-1 border-amber-500 bg-amber-500/20 text-amber-300">
             <span class="text-lg">60s</span>
             <span class="text-[10px] text-amber-300/70 font-normal">Standard</span>
           </button>
-          <button onclick="setTurnDuration(90)" class="time-opt-btn p-3 rounded-xl border text-center transition font-semibold text-sm flex flex-col items-center gap-1 border-slate-700 bg-slate-800/60 hover:bg-slate-700" data-seconds="90">
+          <button onclick="selectPresetTime(90)" id="timeBtn90" class="time-opt-btn p-3 rounded-xl border text-center transition font-semibold text-sm flex flex-col items-center gap-1 border-slate-700 bg-slate-800/60 hover:bg-slate-700">
             <span class="text-lg">90s</span>
             <span class="text-[10px] text-slate-400 font-normal">Spokojna</span>
           </button>
-          <button onclick="setTurnDuration(120)" class="time-opt-btn p-3 rounded-xl border text-center transition font-semibold text-sm flex flex-col items-center gap-1 border-slate-700 bg-slate-800/60 hover:bg-slate-700" data-seconds="120">
+          <button onclick="selectPresetTime(120)" id="timeBtn120" class="time-opt-btn p-3 rounded-xl border text-center transition font-semibold text-sm flex flex-col items-center gap-1 border-slate-700 bg-slate-800/60 hover:bg-slate-700">
             <span class="text-lg">120s</span>
             <span class="text-[10px] text-slate-400 font-normal">Treningowa</span>
           </button>
         </div>
+
+        <!-- Custom Time Tile -->
+        <div id="customTimeTile" class="p-3.5 rounded-xl border transition border-slate-700 bg-slate-800/60 flex items-center justify-between gap-3">
+          <div onclick="selectCustomTime()" class="cursor-pointer flex-grow flex items-center gap-3">
+            <div class="w-10 h-10 rounded-lg bg-slate-700/80 flex items-center justify-center text-amber-400 font-bold text-lg">
+              <i class="fa-solid fa-clock-rotate-left"></i>
+            </div>
+            <div>
+              <div class="text-sm font-bold text-white flex items-center gap-2">
+                <span>Niestandardowy czas:</span>
+                <span id="customTimeValDisplay" class="text-amber-400 text-base font-extrabold">45s</span>
+              </div>
+              <p class="text-xs text-slate-400">Regulacja z krokiem 5 sekund</p>
+            </div>
+          </div>
+
+          <div class="flex items-center gap-1 bg-slate-900/80 p-1 rounded-xl border border-slate-700">
+            <button onclick="adjustCustomTime(-5)" class="w-8 h-8 rounded-lg bg-slate-800 hover:bg-slate-700 text-white font-bold text-sm transition active:scale-90 flex items-center justify-center" title="-5 sekund">
+              -
+            </button>
+            <button onclick="adjustCustomTime(5)" class="w-8 h-8 rounded-lg bg-slate-800 hover:bg-slate-700 text-white font-bold text-sm transition active:scale-90 flex items-center justify-center" title="+5 sekund">
+              +
+            </button>
+          </div>
+        </div>
+
+        <!-- Chess 10 min Tile (Visible ONLY when 2 players are selected) -->
+        <div id="chessTimeTile" class="p-3.5 rounded-xl border transition border-slate-700 bg-slate-800/60 flex items-center justify-between gap-3 hidden">
+          <div onclick="selectChessTime()" class="cursor-pointer flex-grow flex items-center gap-3">
+            <div class="w-10 h-10 rounded-lg bg-purple-500/20 text-purple-400 border border-purple-500/30 flex items-center justify-center font-bold text-lg">
+              <i class="fa-solid fa-chess-knight"></i>
+            </div>
+            <div>
+              <div class="text-sm font-bold text-white flex items-center gap-2">
+                <span>Czas szachowy:</span>
+                <span id="chessTimeValDisplay" class="text-purple-400 text-base font-extrabold">10:00</span>
+              </div>
+              <p class="text-xs text-slate-400">Suma czasu na pojedynki (±15 sekund)</p>
+            </div>
+          </div>
+
+          <div class="flex items-center gap-1 bg-slate-900/80 p-1 rounded-xl border border-slate-700">
+            <button onclick="adjustChessTime(-15)" class="w-8 h-8 rounded-lg bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs transition active:scale-90 flex items-center justify-center" title="-15 sekund">
+              -15
+            </button>
+            <button onclick="adjustChessTime(15)" class="w-8 h-8 rounded-lg bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs transition active:scale-90 flex items-center justify-center" title="+15 sekund">
+              +15
+            </button>
+          </div>
+        </div>
+
       </div>
 
-      <!-- Player Count & List Setup -->
       <div class="glass-panel rounded-2xl p-4 sm:p-6 space-y-4">
         <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-800 pb-4">
           <div>
             <h3 class="text-sm font-bold uppercase tracking-wider text-slate-400 flex items-center gap-2">
-              <i class="fa-solid fa-users text-amber-400"></i> Uczestnicy i Położenie
+              <i class="fa-solid fa-users text-amber-400"></i> Uczestnicy (Max 4)
             </h3>
-            <p class="text-xs text-slate-400 mt-0.5">Ustaw graczom imiona, kolory i kolejność zgodną ze ruchem wskazówek zegara.</p>
+            <p class="text-xs text-slate-400 mt-0.5">Ustaw unikalne imiona, kolory i pozycje przy stole.</p>
           </div>
 
-          <!-- Quick Player Count Selector -->
+          <!-- Player Count Buttons (2, 3, 4 Max) -->
           <div class="flex items-center bg-slate-900 p-1 rounded-xl border border-slate-800">
             <span class="text-xs text-slate-400 font-semibold px-2">Ilość:</span>
             <button onclick="setPlayerCount(2)" class="count-btn px-3 py-1 rounded-lg text-xs font-bold transition hover:bg-slate-800" data-count="2">2</button>
             <button onclick="setPlayerCount(3)" class="count-btn px-3 py-1 rounded-lg text-xs font-bold transition hover:bg-slate-800" data-count="3">3</button>
             <button onclick="setPlayerCount(4)" class="count-btn px-3 py-1 rounded-lg text-xs font-bold transition hover:bg-slate-800 bg-amber-500 text-slate-950" data-count="4">4</button>
-            <button onclick="setPlayerCount(5)" class="count-btn px-3 py-1 rounded-lg text-xs font-bold transition hover:bg-slate-800" data-count="5">5</button>
           </div>
         </div>
 
-        <!-- Dynamic Player Row List -->
+        <!-- Dynamic Player List -->
         <div id="playerSetupList" class="space-y-3">
-          <!-- Dynamically inserted player setup rows -->
+          <!-- Dynamically generated rows -->
         </div>
 
-        <button onclick="addPlayer()" class="w-full py-2.5 rounded-xl border border-dashed border-slate-700 hover:border-slate-500 text-slate-400 hover:text-slate-200 transition text-sm font-medium flex items-center justify-center gap-2 bg-slate-900/40">
+        <button id="addPlayerBtn" onclick="addPlayer()" class="w-full py-2.5 rounded-xl border border-dashed border-slate-700 hover:border-slate-500 text-slate-400 hover:text-slate-200 transition text-sm font-medium flex items-center justify-center gap-2 bg-slate-900/40">
           <i class="fa-solid fa-plus text-xs"></i> Dodaj kolejnego gracza
         </button>
       </div>
 
-      <!-- Start Game Big CTA Button -->
       <div class="pt-2 text-center space-y-3">
-        <button onclick="startGame()" class="w-full sm:w-auto px-10 py-4 rounded-2xl bg-gradient-to-r from-amber-500 via-orange-500 to-red-600 hover:from-amber-400 hover:to-red-500 text-slate-950 font-black text-lg tracking-wider shadow-xl shadow-orange-950/40 transform active:scale-95 transition flex items-center justify-center gap-3 mx-auto border border-amber-300/40">
+        <!-- Standard Start Game Button -->
+        <button id="startGameBtn" onclick="startGame(false)" class="w-full sm:w-auto px-10 py-4 rounded-2xl bg-gradient-to-r from-amber-500 via-orange-500 to-red-600 hover:from-amber-400 hover:to-red-500 text-slate-950 font-black text-lg tracking-wider shadow-xl shadow-orange-950/40 transform active:scale-95 transition flex items-center justify-center gap-3 mx-auto border border-amber-300/40">
           <i class="fa-solid fa-play text-slate-950 text-xl"></i>
-          <span>ROZPOCZNIJ GRĘ (GRACZ 1)</span>
+          <span>ROZPOCZNIJ GRĘ</span>
         </button>
-        <p class="text-xs text-slate-500">Naciśnij przycisk, aby włączyć stoper dla pierwszego gracza.</p>
+
+        <!-- Chess Mode Button (Shown when Chess Time is selected) -->
+        <button id="chessModeBtn" onclick="startGame(true)" class="w-full sm:w-auto px-8 py-3.5 rounded-2xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-extrabold text-base tracking-wider shadow-lg transform active:scale-95 transition flex items-center justify-center gap-2 mx-auto border border-purple-400/30 hidden">
+          <i class="fa-solid fa-chess text-lg"></i>
+          <span>TRYB SZACHOWY</span>
+        </button>
       </div>
     </section>
 
-    <!-- ==================== VIEW 2: ACTIVE GAME ==================== -->
+    <!-- ==================== VIEW 2: STANDARD ACTIVE GAME ==================== -->
     <section id="gameView" class="w-full space-y-6 hidden animate-fade-in">
 
       <!-- Active Turn & Countdown Wheel Card -->
       <div id="activePlayerCard" class="glass-panel rounded-3xl p-5 sm:p-8 text-center relative overflow-hidden player-card-glow border-2 transition-all duration-300">
         
-        <!-- Active Badge Header -->
         <div class="flex items-center justify-between mb-3">
           <span id="turnCounterBadge" class="px-3 py-1 rounded-full text-xs font-semibold bg-slate-800 text-slate-300 border border-slate-700">
             Runda 1 • Tura 1
           </span>
-          <div class="flex items-center gap-2">
-            <span id="activePlayerPosBadge" class="text-xs font-bold px-2.5 py-1 rounded-lg bg-slate-800 text-slate-400">
-              Miejsce #1
-            </span>
-          </div>
+          <span id="activePlayerPosBadge" class="text-xs font-bold px-2.5 py-1 rounded-lg bg-slate-800 text-slate-400">
+            Pozycja: 0°
+          </span>
         </div>
 
-        <!-- Rotating Inner Box (Only the circle and name rotate to player position) -->
+        <!-- Rotating Inner Box -->
         <div id="rotatingTimerBox" class="timer-card-rotate py-2 flex flex-col items-center justify-center my-2">
           <!-- Active Player Name -->
           <div class="mb-2">
@@ -205,97 +255,193 @@
             <p id="activePlayerSubtext" class="text-xs font-medium text-slate-400 mt-1">Twoja tura - ułóż wyłożenie lub pociągnij kostkę</p>
           </div>
 
-          <!-- Circular SVG Countdown Timer -->
-          <div class="relative w-48 h-48 sm:w-60 sm:h-60 my-2 flex items-center justify-center">
+          <!-- Circular Countdown Timer (Clickable to switch turn) -->
+          <div id="timerCircleContainer" onclick="nextTurn()" class="relative w-48 h-48 sm:w-60 sm:h-60 my-2 flex items-center justify-center cursor-pointer group transition-transform duration-100" title="Kliknij, aby przejść do następnego gracza">
             <svg class="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
-              <!-- Background circle -->
               <circle cx="50" cy="50" r="42" stroke="currentColor" stroke-width="6" class="text-slate-800" fill="transparent" />
-              <!-- Animated progress circle -->
               <circle id="timerProgressCircle" cx="50" cy="50" r="42" stroke="currentColor" stroke-width="6" stroke-linecap="round" class="timer-ring-circle text-amber-500" fill="transparent" stroke-dasharray="263.89" stroke-dashoffset="0" />
             </svg>
 
-            <!-- Digital Time Text -->
-            <div class="absolute flex flex-col items-center justify-center">
+            <div class="absolute flex flex-col items-center justify-center pointer-events-none">
               <span id="timeDisplay" class="text-5xl sm:text-6xl font-black font-mono tracking-tighter text-white">60</span>
               <span class="text-xs font-bold uppercase tracking-widest text-slate-400 mt-1">sekund</span>
             </div>
           </div>
+
+          <!-- Next Player Display Under Timer Circle -->
+          <div class="mt-2 text-xs font-medium text-slate-400 mt-1">
+            <span id="nextUpText" class="text-slate-400 font-medium">Kolejny gracz: -</span>
+          </div>
         </div>
 
         <!-- Turn Quick Actions -->
-        <div class="grid grid-cols-3 gap-2 sm:gap-3 max-w-md mx-auto pt-3 border-t border-slate-800/80">
-          <button onclick="addExtraTime(15)" class="py-2.5 px-3 rounded-xl bg-slate-800/80 hover:bg-slate-700 text-slate-200 font-semibold text-xs border border-slate-700 flex items-center justify-center gap-1.5 transition active:scale-95">
-            <i class="fa-solid fa-plus text-amber-400"></i> 15s
-          </button>
-          
+        <div class="grid grid-cols-2 gap-2 sm:gap-3 max-w-xs mx-auto pt-3 border-t border-slate-800/80">
           <button id="pauseBtn" onclick="togglePause()" class="py-2.5 px-3 rounded-xl bg-slate-800/80 hover:bg-slate-700 text-slate-200 font-semibold text-xs border border-slate-700 flex items-center justify-center gap-1.5 transition active:scale-95">
             <i id="pauseIcon" class="fa-solid fa-pause text-amber-400"></i>
             <span id="pauseText">Pauza</span>
           </button>
 
-          <button onclick="resetCurrentTurnTimer()" class="py-2.5 px-3 rounded-xl bg-slate-800/80 hover:bg-slate-700 text-slate-200 font-semibold text-xs border border-slate-700 flex items-center justify-center gap-1.5 transition active:scale-95">
-            <i class="fa-solid fa-rotate-right text-slate-400"></i> Reset
+          <button onclick="returnToSetupLobby()" class="py-2.5 px-3 rounded-xl bg-red-950/40 hover:bg-red-900/60 text-red-300 font-semibold text-xs border border-red-800/50 flex items-center justify-center gap-1.5 transition active:scale-95">
+            <i class="fa-solid fa-flag text-red-400"></i> Zakończ grę
           </button>
         </div>
 
-        <!-- BIG NEXT TURN BUTTON - POSITIONED DIRECTLY BELOW ROTATING WHEEL -->
+        <!-- BIG NEXT TURN BUTTON -->
         <div class="mt-4">
-          <button id="nextTurnBtn" onclick="nextTurn()" class="w-full py-4 rounded-2xl font-black text-xl tracking-wider shadow-lg transform active:scale-98 transition-all flex items-center justify-center gap-3 border">
+          <button id="nextTurnBtn" onclick="nextTurn()" class="w-full py-4 rounded-2xl font-black text-xl tracking-wider shadow-lg transform active:scale-98 transition flex items-center justify-center gap-3 border">
             <span>ZAKOŃCZ TURĘ</span>
             <i class="fa-solid fa-circle-chevron-right text-2xl"></i>
           </button>
         </div>
       </div>
 
-      <!-- Turn Order Track & Seats -->
-      <div class="glass-panel rounded-2xl p-4 space-y-3">
-        <div class="flex items-center justify-between text-xs text-slate-400 font-bold uppercase tracking-wider">
-          <span>Kolejność przy stole</span>
-          <span id="nextUpText" class="text-amber-400">Następny: -</span>
+    </section>
+
+    <!-- ==================== VIEW 3: SPLIT CHESS MODE ==================== -->
+    <section id="chessGameView" class="w-full space-y-4 hidden animate-fade-in">
+      <div class="text-center">
+        <span class="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-purple-500/20 text-purple-300 border border-purple-500/30">
+          Dwuosobowy Tryb Szachowy
+        </span>
+      </div>
+
+      <!-- Split Screen Cards Container -->
+      <div class="grid grid-rows-2 gap-4 h-[65vh] w-full max-w-md mx-auto">
+        
+        <!-- Player 2 Top Half (Rotated 180 degrees) -->
+        <div id="chessP2Card" onclick="handleChessCardClick(1)" class="chess-split-card glass-panel rounded-3xl p-6 flex flex-col items-center justify-center transform rotate-180 border-2 cursor-pointer select-none relative overflow-hidden">
+          <div class="text-center">
+            <h3 id="chessP2Name" class="text-2xl sm:text-3xl font-black text-white">Gracz 2</h3>
+            <span id="chessP2Status" class="text-xs font-bold uppercase tracking-wider text-slate-400">Oczekiwanie</span>
+          </div>
+          <div class="my-3 text-5xl sm:text-6xl font-black font-mono tracking-tighter text-white" id="chessP2Time">
+            10:00
+          </div>
+          <div class="text-xs font-bold uppercase tracking-widest text-slate-400">Dotknij, aby przełączyć</div>
         </div>
-        <div id="seatingTrack" class="flex items-center gap-2 overflow-x-auto pb-2 pt-1">
-          <!-- Dynamic seating badges -->
+
+        <!-- Player 1 Bottom Half (0 degrees) -->
+        <div id="chessP1Card" onclick="handleChessCardClick(0)" class="chess-split-card glass-panel rounded-3xl p-6 flex flex-col items-center justify-center border-2 cursor-pointer select-none relative overflow-hidden">
+          <div class="text-center">
+            <h3 id="chessP1Name" class="text-2xl sm:text-3xl font-black text-white">Gracz 1</h3>
+            <span id="chessP1Status" class="text-xs font-bold uppercase tracking-wider text-amber-400">Twój ruch</span>
+          </div>
+          <div class="my-3 text-5xl sm:text-6xl font-black font-mono tracking-tighter text-white" id="chessP1Time">
+            10:00
+          </div>
+          <div class="text-xs font-bold uppercase tracking-widest text-slate-400">Dotknij, aby zakończyć ruch</div>
+        </div>
+
+      </div>
+
+      <!-- Chess Mode Controls -->
+      <div class="flex items-center justify-center gap-3 max-w-md mx-auto pt-2">
+        <button id="chessPauseBtn" onclick="togglePause()" class="py-3 px-6 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-sm border border-slate-700 flex items-center justify-center gap-2">
+          <i id="chessPauseIcon" class="fa-solid fa-pause text-amber-400"></i>
+          <span id="chessPauseText">Pauza</span>
+        </button>
+
+        <button onclick="returnToSetupLobby()" class="py-3 px-6 rounded-xl bg-red-950/40 hover:bg-red-900/60 text-red-300 font-bold text-sm border border-red-800/50 flex items-center justify-center gap-2">
+          <i class="fa-solid fa-flag text-red-400"></i> Zakończ grę
+        </button>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ==================== INFO MODAL ==================== -->
+  <div id="infoModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm hidden p-4 animate-fade-in">
+    <div class="glass-panel bg-slate-900/95 border border-slate-700 rounded-3xl max-w-lg w-full max-h-[85vh] overflow-y-auto p-6 shadow-2xl space-y-5">
+      
+      <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+        <div class="flex items-center gap-2">
+          <div class="w-8 h-8 rounded-lg bg-amber-500/20 text-amber-400 flex items-center justify-center font-bold">
+            <i class="fa-solid fa-circle-info"></i>
+          </div>
+          <h3 class="text-lg font-black text-white">Instrukcja i Informacje</h3>
+        </div>
+        <button onclick="closeInfoModal()" class="w-8 h-8 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white flex items-center justify-center transition">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <div class="space-y-4 text-sm text-slate-300">
+        <div class="space-y-1.5">
+          <h4 class="font-bold text-white flex items-center gap-2 text-amber-400">
+            <i class="fa-solid fa-stopwatch text-xs"></i> 1. Wybór czasu tury
+          </h4>
+          <p class="text-xs text-slate-400 leading-relaxed">
+            Możesz wybrać standardowy czas (30s, 60s, 90s, 120s), dostosować własny czas (kroki co 5 sekund) lub przy wyborze 2 graczy aktywować **Czas szachowy**.
+          </p>
+        </div>
+
+        <div class="space-y-1.5">
+          <h4 class="font-bold text-white flex items-center gap-2 text-purple-400">
+            <i class="fa-solid fa-chess-knight text-xs"></i> 2. Tryb szachowy (2 graczy)
+          </h4>
+          <p class="text-xs text-slate-400 leading-relaxed">
+            W trybie szachowym każdy z 2 graczy otrzymuje wspólny bank czasu (domyślnie 10 minut, regulowany co ±15s). Po wykonaniu ruchu dotyka swojego panelu, aby zatrzymać swój zegar i uruchomić zegar przeciwnika.
+          </p>
+        </div>
+
+        <div class="space-y-1.5">
+          <h4 class="font-bold text-white flex items-center gap-2 text-emerald-400">
+            <i class="fa-solid fa-users text-xs"></i> 3. Szybkie przełączanie
+          </h4>
+          <p class="text-xs text-slate-400 leading-relaxed">
+            Możesz w każdej chwili zakończyć turę i przekazać ją kolejnemu graczowi, klikając na **duży okrągły timer** na środku ekranu lub na dolny przycisk „Zakończ turę”.
+          </p>
+        </div>
+
+        <div class="space-y-1.5">
+          <h4 class="font-bold text-white flex items-center gap-2 text-blue-400">
+            <i class="fa-solid fa-volume-high text-xs"></i> 4. Dźwięki i Powiadomienia
+          </h4>
+          <p class="text-xs text-slate-400 leading-relaxed">
+            Ostatnie 10 sekund każdej tury sygnalizowane jest dźwiękiem ostrzegawczym. Dźwięki można w każdej chwili wyciszyć przyciskiem w górnym pasku.
+          </p>
         </div>
       </div>
 
-    </section>
-  </main>
+      <div class="pt-2 border-t border-slate-800 text-center">
+        <button onclick="closeInfoModal()" class="w-full py-3 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-extrabold text-sm transition">
+          Zrozumiałem, do gry!
+        </button>
+      </div>
 
-  <!-- ==================== MODALS & DIALOGS ==================== -->
-  
+    </div>
+  </div>
+
   <!-- Notification Toast -->
   <div id="toast" class="fixed bottom-5 right-5 z-50 transform translate-y-20 opacity-0 transition-all duration-300 pointer-events-none bg-slate-800 text-white px-4 py-3 rounded-xl shadow-2xl border border-slate-700 flex items-center gap-3">
     <i id="toastIcon" class="fa-solid fa-circle-info text-amber-400"></i>
     <span id="toastMsg" class="text-sm font-medium">Powiadomienie</span>
   </div>
 
-  <!-- Footer -->
-  <footer class="w-full text-center py-3 text-xs text-slate-500 border-t border-slate-900 bg-slate-950">
-    Rummikub Timer & Scoreboard • Wersja Turniejowa
-  </footer>
-
-  <!-- ==================== JAVASCRIPT LOGIC ==================== -->
   <script>
-    
-    // Preset colors with exact hex / tailwind classes
     const PLAYER_COLORS = [
-      { id: 'red', name: 'Czerwony', hex: '#ef4444', borderClass: 'border-red-500', bgClass: 'bg-red-500' },
-      { id: 'blue', name: 'Niebieski', hex: '#3b82f6', borderClass: 'border-blue-500', bgClass: 'bg-blue-500' },
-      { id: 'orange', name: 'Pomarańczowy', hex: '#f97316', borderClass: 'border-orange-500', bgClass: 'bg-orange-500' },
-      { id: 'black', name: 'Czarny', hex: '#475569', borderClass: 'border-slate-500', bgClass: 'bg-slate-600' },
-      { id: 'green', name: 'Zielony', hex: '#10b981', borderClass: 'border-emerald-500', bgClass: 'bg-emerald-500' },
-      { id: 'purple', name: 'Fioletowy', hex: '#a855f7', borderClass: 'border-purple-500', bgClass: 'bg-purple-500' }
+      { id: 'red', name: 'Czerwony', hex: '#ef4444' },
+      { id: 'blue', name: 'Niebieski', hex: '#3b82f6' },
+      { id: 'orange', name: 'Pomarańczowy', hex: '#f97316' },
+      { id: 'slate', name: 'Szary', hex: '#64748b' },
+      { id: 'green', name: 'Zielony', hex: '#10b981' },
+      { id: 'purple', name: 'Fioletowy', hex: '#a855f7' },
+      { id: 'yellow', name: 'Żółty', hex: '#eab308' },
+      { id: 'pink', name: 'Różowy', hex: '#ec4899' }
     ];
 
-    // Main Game State
     let gameState = {
-      turnDuration: 60, // seconds
+      turnDuration: 60,
+      customTime: 45,
+      chessTime: 600,
+      selectedTimeType: 'preset',
+      isChessMode: false,
       soundEnabled: true,
       players: [
-        { id: 1, name: 'Gracz 1', colorHex: '#ef4444', rotation: 0 },
-        { id: 2, name: 'Gracz 2', colorHex: '#3b82f6', rotation: 180 },
-        { id: 3, name: 'Gracz 3', colorHex: '#f97316', rotation: 90 },
-        { id: 4, name: 'Gracz 4', colorHex: '#475569', rotation: 270 }
+        { id: 1, name: 'Gracz 1', colorHex: '#ef4444', rotation: 0, chessBank: 600 },
+        { id: 2, name: 'Gracz 2', colorHex: '#3b82f6', rotation: 180, chessBank: 600 },
+        { id: 3, name: 'Gracz 3', colorHex: '#f97316', rotation: 90, chessBank: 600 },
+        { id: 4, name: 'Gracz 4', colorHex: '#64748b', rotation: 270, chessBank: 600 }
       ],
       activePlayerIndex: 0,
       roundNumber: 1,
@@ -305,7 +451,6 @@
       timerInterval: null
     };
 
-    // Synthesized Audio via Tone.js
     let synth = null;
 
     function initAudio() {
@@ -349,92 +494,111 @@
       }
     }
 
+    function openInfoModal() {
+      const modal = document.getElementById('infoModal');
+      modal.classList.remove('hidden');
+    }
 
-    // Setup Screen Rendering & Logic
+    function closeInfoModal() {
+      const modal = document.getElementById('infoModal');
+      modal.classList.add('hidden');
+    }
+
     function renderSetupPlayerList() {
       const container = document.getElementById('playerSetupList');
       container.innerHTML = '';
+
+      const takenColors = gameState.players.map(p => p.colorHex);
 
       gameState.players.forEach((player, index) => {
         const row = document.createElement('div');
         row.className = 'flex flex-wrap sm:flex-nowrap items-center gap-2 sm:gap-3 bg-slate-900/80 p-3 rounded-xl border border-slate-800 transition hover:border-slate-700';
 
-        // Order badge & reorder controls
         const orderBox = document.createElement('div');
-        orderBox.className = 'flex items-center gap-1 min-w-[70px]';
+        orderBox.className = 'flex items-center gap-1 min-w-[65px]';
         orderBox.innerHTML = `
           <span class="w-6 h-6 rounded-lg bg-slate-800 text-slate-300 flex items-center justify-center font-extrabold text-xs">
             ${index + 1}
           </span>
           <div class="flex flex-col">
-            <button onclick="movePlayer(${index}, -1)" ${index === 0 ? 'disabled class="opacity-20 text-slate-600"' : 'class="text-slate-400 hover:text-amber-400 text-[10px]"'} title="Przesuń wyżej w kolejności">
+            <button onclick="movePlayer(${index}, -1)" ${index === 0 ? 'disabled class="opacity-20 text-slate-600"' : 'class="text-slate-400 hover:text-amber-400 text-[10px]"'}>
               <i class="fa-solid fa-chevron-up"></i>
             </button>
-            <button onclick="movePlayer(${index}, 1)" ${index === gameState.players.length - 1 ? 'disabled class="opacity-20 text-slate-600"' : 'class="text-slate-400 hover:text-amber-400 text-[10px]"'} title="Przesuń niżej w kolejności">
+            <button onclick="movePlayer(${index}, 1)" ${index === gameState.players.length - 1 ? 'disabled class="opacity-20 text-slate-600"' : 'class="text-slate-400 hover:text-amber-400 text-[10px]"'}>
               <i class="fa-solid fa-chevron-down"></i>
             </button>
           </div>
         `;
 
-        // Name input
+        const nameContainer = document.createElement('div');
+        nameContainer.className = 'flex-grow flex items-center gap-2';
+
         const nameInput = document.createElement('input');
         nameInput.type = 'text';
         nameInput.value = player.name;
         nameInput.placeholder = `Gracz ${index + 1}`;
-        nameInput.className = 'flex-grow bg-slate-800 border border-slate-700 rounded-lg px-3 py-1.5 text-sm font-semibold text-white focus:outline-none focus:border-amber-500';
+        nameInput.className = 'flex-grow bg-slate-800 border border-slate-700 rounded-lg px-3 py-1.5 text-sm font-semibold text-white focus:outline-none focus:border-amber-500 h-[38px]';
         nameInput.oninput = (e) => {
           player.name = e.target.value || `Gracz ${index + 1}`;
         };
 
-        // Color selector buttons
-        const colorPalette = document.createElement('div');
-        colorPalette.className = 'flex items-center gap-1.5';
-        PLAYER_COLORS.forEach(c => {
-          const colorBtn = document.createElement('button');
-          colorBtn.type = 'button';
-          colorBtn.style.backgroundColor = c.hex;
-          const isSelected = player.colorHex === c.hex;
-          colorBtn.className = `w-6 h-6 rounded-full transition transform ${isSelected ? 'ring-2 ring-white scale-110' : 'opacity-60 hover:opacity-100 scale-95'}`;
-          colorBtn.onclick = () => {
-            player.colorHex = c.hex;
-            renderSetupPlayerList();
-          };
-          colorPalette.appendChild(colorBtn);
-        });
-
-        // Orientation / Table Position selector
-        const rotationBtn = document.createElement('button');
-        rotationBtn.type = 'button';
-        rotationBtn.className = 'px-2 py-1 rounded-lg bg-slate-800 border border-slate-700 text-xs font-bold text-amber-400 hover:bg-slate-700 transition flex items-center gap-1';
-        const rotMap = { 0: '0° (Dół)', 90: '90° (Prawo)', 180: '180° (Góra)', 270: '270° (Lewo)' };
-        rotationBtn.innerHTML = `<i class="fa-solid fa-arrows-rotate text-[10px]"></i> ${player.rotation}°`;
-        rotationBtn.title = `Pozycja przy stole: ${rotMap[player.rotation] || player.rotation + '°'}`;
-        rotationBtn.onclick = () => {
-          player.rotation = (player.rotation + 90) % 360;
-          renderSetupPlayerList();
-        };
-
-        // Delete button (if player count > 2)
         const delBtn = document.createElement('button');
         delBtn.type = 'button';
-        delBtn.className = `p-2 text-slate-500 hover:text-red-400 transition ${gameState.players.length <= 2 ? 'opacity-20 cursor-not-allowed' : ''}`;
+        delBtn.className = `px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-red-950/60 text-slate-400 hover:text-red-400 transition border border-slate-700 h-[38px] flex items-center justify-center ${gameState.players.length <= 2 ? 'opacity-20 cursor-not-allowed' : ''}`;
         delBtn.onclick = () => {
           if (gameState.players.length > 2) {
             removePlayer(index);
           }
         };
+        delBtn.title = "Usuń gracza";
         delBtn.innerHTML = `<i class="fa-solid fa-trash-can text-sm"></i>`;
 
+        nameContainer.appendChild(nameInput);
+        nameContainer.appendChild(delBtn);
+
+        const colorPalette = document.createElement('div');
+        colorPalette.className = 'flex items-center gap-1.5';
+        PLAYER_COLORS.forEach(c => {
+          const isTakenByOther = takenColors.includes(c.hex) && player.colorHex !== c.hex;
+          const isSelected = player.colorHex === c.hex;
+
+          const colorBtn = document.createElement('button');
+          colorBtn.type = 'button';
+          colorBtn.style.backgroundColor = c.hex;
+          colorBtn.className = `w-6 h-6 rounded-full transition transform ${
+            isSelected 
+              ? 'ring-2 ring-white scale-110 opacity-100 z-10' 
+              : isTakenByOther 
+                ? 'opacity-20 cursor-not-allowed scale-90' 
+                : 'opacity-60 hover:opacity-100 scale-95'
+          }`;
+
+          if (!isTakenByOther) {
+            colorBtn.onclick = () => {
+              player.colorHex = c.hex;
+              renderSetupPlayerList();
+            };
+          }
+          colorPalette.appendChild(colorBtn);
+        });
+
+        const rotationBtn = document.createElement('button');
+        rotationBtn.type = 'button';
+        rotationBtn.className = 'px-2.5 py-1.5 rounded-lg bg-slate-800 border border-slate-700 text-xs font-bold text-amber-400 hover:bg-slate-700 transition flex items-center gap-1 h-[38px]';
+        rotationBtn.innerHTML = `<i class="fa-solid fa-arrows-rotate text-[10px]"></i> ${player.rotation}°`;
+        rotationBtn.onclick = () => {
+          player.rotation = (player.rotation + 90) % 360;
+          renderSetupPlayerList();
+        };
+
         row.appendChild(orderBox);
-        row.appendChild(nameInput);
+        row.appendChild(nameContainer);
         row.appendChild(colorPalette);
         row.appendChild(rotationBtn);
-        row.appendChild(delBtn);
 
         container.appendChild(row);
       });
 
-      // Update quick count buttons UI
       document.querySelectorAll('.count-btn').forEach(btn => {
         const count = parseInt(btn.dataset.count);
         if (count === gameState.players.length) {
@@ -443,35 +607,133 @@
           btn.className = 'count-btn px-3 py-1 rounded-lg text-xs font-bold transition hover:bg-slate-800 text-slate-400';
         }
       });
+
+      const chessTile = document.getElementById('chessTimeTile');
+      const addPlayerBtn = document.getElementById('addPlayerBtn');
+
+      if (gameState.players.length === 2) {
+        chessTile.classList.remove('hidden');
+      } else {
+        chessTile.classList.add('hidden');
+        if (gameState.selectedTimeType === 'chess') {
+          selectPresetTime(60);
+        }
+      }
+
+      if (gameState.players.length >= 4) {
+        addPlayerBtn.classList.add('opacity-40', 'pointer-events-none');
+      } else {
+        addPlayerBtn.classList.remove('opacity-40', 'pointer-events-none');
+      }
+
+      updateStartButtonsVisibility();
     }
 
-    function setTurnDuration(sec) {
+    function updateStartButtonsVisibility() {
+      const startBtn = document.getElementById('startGameBtn');
+      const chessBtn = document.getElementById('chessModeBtn');
+
+      if (!startBtn || !chessBtn) return;
+
+      if (gameState.selectedTimeType === 'chess') {
+        startBtn.classList.add('hidden');
+        chessBtn.classList.remove('hidden');
+      } else {
+        startBtn.classList.remove('hidden');
+        chessBtn.classList.add('hidden');
+      }
+    }
+
+    function selectPresetTime(sec) {
+      gameState.selectedTimeType = 'preset';
       gameState.turnDuration = sec;
       gameState.remainingTime = sec;
       
       document.querySelectorAll('.time-opt-btn').forEach(btn => {
-        const seconds = parseInt(btn.dataset.seconds);
-        if (seconds === sec) {
-          btn.className = 'time-opt-btn p-3 rounded-xl border text-center transition font-semibold text-sm flex flex-col items-center gap-1 border-amber-500 bg-amber-500/20 text-amber-300';
-        } else {
-          btn.className = 'time-opt-btn p-3 rounded-xl border text-center transition font-semibold text-sm flex flex-col items-center gap-1 border-slate-700 bg-slate-800/60 hover:bg-slate-700 text-slate-300';
-        }
+        btn.className = 'time-opt-btn p-3 rounded-xl border text-center transition font-semibold text-sm flex flex-col items-center gap-1 border-slate-700 bg-slate-800/60 hover:bg-slate-700 text-slate-300';
       });
 
+      const activeBtn = document.getElementById(`timeBtn${sec}`);
+      if (activeBtn) {
+        activeBtn.className = 'time-opt-btn p-3 rounded-xl border text-center transition font-semibold text-sm flex flex-col items-center gap-1 border-amber-500 bg-amber-500/20 text-amber-300';
+      }
+
+      document.getElementById('customTimeTile').className = 'p-3.5 rounded-xl border transition border-slate-700 bg-slate-800/60 flex items-center justify-between gap-3';
+      document.getElementById('chessTimeTile').className = 'p-3.5 rounded-xl border transition border-slate-700 bg-slate-800/60 flex items-center justify-between gap-3';
+
+      updateStartButtonsVisibility();
       showToast(`Czas tury ustawiony na ${sec}s`);
     }
 
+    function selectCustomTime() {
+      gameState.selectedTimeType = 'custom';
+      gameState.turnDuration = gameState.customTime;
+      gameState.remainingTime = gameState.customTime;
+
+      document.querySelectorAll('.time-opt-btn').forEach(btn => {
+        btn.className = 'time-opt-btn p-3 rounded-xl border text-center transition font-semibold text-sm flex flex-col items-center gap-1 border-slate-700 bg-slate-800/60 hover:bg-slate-700 text-slate-300';
+      });
+
+      document.getElementById('customTimeTile').className = 'p-3.5 rounded-xl border transition border-amber-500 bg-amber-500/20 text-amber-300 flex items-center justify-between gap-3';
+      document.getElementById('chessTimeTile').className = 'p-3.5 rounded-xl border transition border-slate-700 bg-slate-800/60 flex items-center justify-between gap-3';
+
+      updateStartButtonsVisibility();
+      showToast(`Wybrano czas niestandardowy: ${gameState.customTime}s`);
+    }
+
+    function adjustCustomTime(delta) {
+      gameState.customTime = Math.max(10, gameState.customTime + delta);
+      document.getElementById('customTimeValDisplay').innerText = `${gameState.customTime}s`;
+      selectCustomTime();
+    }
+
+    function selectChessTime() {
+      gameState.selectedTimeType = 'chess';
+      gameState.turnDuration = gameState.chessTime;
+      gameState.remainingTime = gameState.chessTime;
+
+      document.querySelectorAll('.time-opt-btn').forEach(btn => {
+        btn.className = 'time-opt-btn p-3 rounded-xl border text-center transition font-semibold text-sm flex flex-col items-center gap-1 border-slate-700 bg-slate-800/60 hover:bg-slate-700 text-slate-300';
+      });
+
+      document.getElementById('customTimeTile').className = 'p-3.5 rounded-xl border transition border-slate-700 bg-slate-800/60 flex items-center justify-between gap-3';
+      document.getElementById('chessTimeTile').className = 'p-3.5 rounded-xl border transition border-purple-500 bg-purple-500/20 text-purple-300 flex items-center justify-between gap-3';
+
+      const mins = Math.floor(gameState.chessTime / 60);
+      const secs = gameState.chessTime % 60;
+      const formatted = `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+
+      updateStartButtonsVisibility();
+      showToast(`Wybrano czas szachowy: ${formatted}`);
+    }
+
+    function adjustChessTime(delta) {
+      gameState.chessTime = Math.max(30, gameState.chessTime + delta);
+      const mins = Math.floor(gameState.chessTime / 60);
+      const secs = gameState.chessTime % 60;
+      const formatted = `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+      document.getElementById('chessTimeValDisplay').innerText = formatted;
+      
+      gameState.players.forEach(p => p.chessBank = gameState.chessTime);
+      selectChessTime();
+    }
+
     function setPlayerCount(count) {
+      count = Math.min(4, Math.max(2, count));
       const currentCount = gameState.players.length;
-      const defaultRotations = [0, 180, 90, 270, 45, 135];
+      const defaultRotations = [0, 180, 90, 270];
+
       if (count > currentCount) {
         for (let i = currentCount; i < count; i++) {
-          const colorObj = PLAYER_COLORS[i % PLAYER_COLORS.length];
+          const taken = gameState.players.map(p => p.colorHex);
+          const available = PLAYER_COLORS.find(c => !taken.includes(c.hex)) || PLAYER_COLORS[i % PLAYER_COLORS.length];
+
           gameState.players.push({
             id: Date.now() + i,
             name: `Gracz ${i + 1}`,
-            colorHex: colorObj.hex,
-            rotation: defaultRotations[i % defaultRotations.length]
+            colorHex: available.hex,
+            rotation: defaultRotations[i % defaultRotations.length],
+            chessBank: gameState.chessTime
           });
         }
       } else if (count < currentCount) {
@@ -481,20 +743,11 @@
     }
 
     function addPlayer() {
-      if (gameState.players.length >= 8) {
-        showToast('Maksymalnie 8 graczy');
+      if (gameState.players.length >= 4) {
+        showToast('Maksymalna liczba graczy to 4!');
         return;
       }
-      const newIndex = gameState.players.length;
-      const colorObj = PLAYER_COLORS[newIndex % PLAYER_COLORS.length];
-      const defaultRotations = [0, 180, 90, 270, 45, 135];
-      gameState.players.push({
-        id: Date.now(),
-        name: `Gracz ${newIndex + 1}`,
-        colorHex: colorObj.hex,
-        rotation: defaultRotations[newIndex % defaultRotations.length]
-      });
-      renderSetupPlayerList();
+      setPlayerCount(gameState.players.length + 1);
     }
 
     function removePlayer(index) {
@@ -512,44 +765,41 @@
       renderSetupPlayerList();
     }
 
-
-    function startGame() {
-      // Validate player names
+    function startGame(isChessMode = false) {
       gameState.players.forEach((p, idx) => {
         if (!p.name.trim()) p.name = `Gracz ${idx + 1}`;
+        p.chessBank = gameState.chessTime;
       });
 
+      gameState.isChessMode = isChessMode;
       gameState.activePlayerIndex = 0;
       gameState.remainingTime = gameState.turnDuration;
       gameState.roundNumber = 1;
       gameState.totalTurnsCount = 1;
 
-      // Switch view
       document.getElementById('setupView').classList.add('hidden');
-      document.getElementById('gameView').classList.remove('hidden');
 
-      renderActivePlayerUI();
-      renderSeatingTrack();
+      if (isChessMode) {
+        document.getElementById('chessGameView').classList.remove('hidden');
+        document.getElementById('gameView').classList.add('hidden');
+        initChessModeUI();
+      } else {
+        document.getElementById('gameView').classList.remove('hidden');
+        document.getElementById('chessGameView').classList.add('hidden');
+        renderActivePlayerUI();
+      }
       
       startTurnTimer();
       playSound('start');
-      showToast(`Gra rozpoczęta! Tura: ${gameState.players[0].name}`);
+      showToast('Gra rozpoczęta!');
     }
 
-    function confirmResetToLobby() {
-      if (document.getElementById('gameView').classList.contains('hidden')) {
-        showToast('Jesteś w menu konfiguracji.');
-        return;
-      }
+    function returnToSetupLobby() {
       pauseTurnTimer();
-      if (confirm("Czy na pewno chcesz przerwać obecną grę i wrócić do konfiguracji graczy?")) {
-        document.getElementById('gameView').classList.add('hidden');
-        document.getElementById('setupView').classList.remove('hidden');
-      } else {
-        resumeTurnTimer();
-      }
+      document.getElementById('gameView').classList.add('hidden');
+      document.getElementById('chessGameView').classList.add('hidden');
+      document.getElementById('setupView').classList.remove('hidden');
     }
-
 
     function startTurnTimer() {
       clearInterval(gameState.timerInterval);
@@ -559,29 +809,36 @@
       gameState.timerInterval = setInterval(() => {
         if (!gameState.isTimerRunning) return;
 
-        gameState.remainingTime--;
-        updateTimerDisplay();
+        if (gameState.isChessMode) {
+          const activeP = getActivePlayer();
+          activeP.chessBank--;
+          updateChessModeDisplay();
 
-        if (gameState.remainingTime <= 5 && gameState.remainingTime > 0) {
-          playSound('warning');
-        }
+          if (activeP.chessBank <= 0) {
+            clearInterval(gameState.timerInterval);
+            playSound('timeout');
+            showToast(`Czas minął dla ${activeP.name}!`);
+          }
+        } else {
+          gameState.remainingTime--;
+          updateTimerDisplay();
 
-        if (gameState.remainingTime <= 0) {
-          clearInterval(gameState.timerInterval);
-          playSound('timeout');
-          showToast(`Czas minął! Automatyczny koniec tury ${getActivePlayer().name}`);
-          nextTurn();
+          if (gameState.remainingTime <= 5 && gameState.remainingTime > 0) {
+            playSound('warning');
+          }
+
+          if (gameState.remainingTime <= 0) {
+            clearInterval(gameState.timerInterval);
+            playSound('timeout');
+            showToast(`Czas minął dla ${getActivePlayer().name}!`);
+            nextTurn();
+          }
         }
       }, 1000);
     }
 
     function pauseTurnTimer() {
       gameState.isTimerRunning = false;
-      updatePauseButtonUI();
-    }
-
-    function resumeTurnTimer() {
-      gameState.isTimerRunning = true;
       updatePauseButtonUI();
     }
 
@@ -594,34 +851,39 @@
     function updatePauseButtonUI() {
       const icon = document.getElementById('pauseIcon');
       const text = document.getElementById('pauseText');
-      if (gameState.isTimerRunning) {
-        icon.className = 'fa-solid fa-pause text-amber-400';
-        text.innerText = 'Pauza';
-      } else {
-        icon.className = 'fa-solid fa-play text-emerald-400';
-        text.innerText = 'Wznów';
+      const chessIcon = document.getElementById('chessPauseIcon');
+      const chessText = document.getElementById('chessPauseText');
+
+      const iconClass = gameState.isTimerRunning ? 'fa-solid fa-pause text-amber-400' : 'fa-solid fa-play text-emerald-400';
+      const label = gameState.isTimerRunning ? 'Pauza' : 'Wznów';
+
+      if (icon && text) {
+        icon.className = iconClass;
+        text.innerText = label;
+      }
+      if (chessIcon && chessText) {
+        chessIcon.className = iconClass;
+        chessText.innerText = label;
       }
     }
 
-    function resetCurrentTurnTimer() {
-      gameState.remainingTime = gameState.turnDuration;
-      updateTimerDisplay();
-      showToast('Zresetowano czas tury');
-    }
-
-    function addExtraTime(seconds) {
-      gameState.remainingTime += seconds;
-      updateTimerDisplay();
-      showToast(`Dodano +${seconds}s`);
-    }
-
     function nextTurn() {
+      // Reset timer container scale immediately on turn change
+      const timerContainer = document.getElementById('timerCircleContainer');
+      if (timerContainer) {
+        timerContainer.style.transform = 'scale(1)';
+      }
+
       gameState.activePlayerIndex = (gameState.activePlayerIndex + 1) % gameState.players.length;
       gameState.totalTurnsCount++;
       gameState.remainingTime = gameState.turnDuration;
 
-      renderActivePlayerUI();
-      renderSeatingTrack();
+      if (gameState.isChessMode) {
+        updateChessModeDisplay();
+      } else {
+        renderActivePlayerUI();
+      }
+
       startTurnTimer();
       playSound('tick');
     }
@@ -629,7 +891,6 @@
     function getActivePlayer() {
       return gameState.players[gameState.activePlayerIndex];
     }
-
 
     function renderActivePlayerUI() {
       const activePlayer = getActivePlayer();
@@ -639,26 +900,27 @@
       const posBadge = document.getElementById('activePlayerPosBadge');
       const turnBadge = document.getElementById('turnCounterBadge');
       const nextTurnBtn = document.getElementById('nextTurnBtn');
+      const nextUpText = document.getElementById('nextUpText');
 
       nameEl.innerText = activePlayer.name;
       posBadge.innerText = `Pozycja: ${activePlayer.rotation}°`;
       turnBadge.innerText = `Runda ${gameState.roundNumber} • Tura #${gameState.totalTurnsCount}`;
 
-      // Highlight main card with active player's color tint and border
+      const nextPlayer = gameState.players[(gameState.activePlayerIndex + 1) % gameState.players.length];
+      nextUpText.innerText = `Kolejny gracz: ${nextPlayer.name}`;
+
       card.className = "glass-panel rounded-3xl p-5 sm:p-8 text-center relative overflow-hidden player-card-glow border-2 transition-all duration-300";
       card.style.borderColor = activePlayer.colorHex;
-      card.style.backgroundColor = `${activePlayer.colorHex}15`; // Subtle tint
+      card.style.backgroundColor = `${activePlayer.colorHex}15`;
       card.style.boxShadow = `0 0 35px 2px ${activePlayer.colorHex}44`;
 
-      // Smooth Rotation applied ONLY to inner timer wheel box
       if (rotBox) {
         rotBox.style.transform = `rotate(${activePlayer.rotation || 0}deg)`;
       }
 
-      // Style BIG NEXT TURN BUTTON in active player's color
       if (nextTurnBtn) {
         nextTurnBtn.style.backgroundColor = activePlayer.colorHex;
-        nextTurnBtn.style.color = '#0f172a'; // dark contrast text
+        nextTurnBtn.style.color = '#0f172a';
         nextTurnBtn.style.borderColor = activePlayer.colorHex;
         nextTurnBtn.style.boxShadow = `0 8px 25px -4px ${activePlayer.colorHex}88`;
       }
@@ -673,186 +935,63 @@
 
       timeDisplay.innerText = gameState.remainingTime;
 
-      // SVG Circle Dashoffset calculation (r = 42, circum ~ 263.89)
       const maxOffset = 263.89;
       const progress = Math.max(0, gameState.remainingTime) / gameState.turnDuration;
       const offset = maxOffset - (progress * maxOffset);
       circle.style.strokeDashoffset = offset;
 
-      // Color warning when low time
       if (gameState.remainingTime <= 10) {
-        circle.style.stroke = '#ef4444'; // red
-        timeDisplay.classList.add('text-red-500', 'animate-pulse');
+        circle.style.stroke = '#ef4444';
+        timeDisplay.className = 'text-5xl sm:text-6xl font-black font-mono tracking-tighter text-red-500 animate-pulse';
       } else {
         circle.style.stroke = activePlayer.colorHex;
         timeDisplay.className = 'text-5xl sm:text-6xl font-black font-mono tracking-tighter text-white';
       }
     }
 
-    function renderSeatingTrack() {
-      const track = document.getElementById('seatingTrack');
-      const nextUpText = document.getElementById('nextUpText');
-      track.innerHTML = '';
+    function initChessModeUI() {
+      const p1 = gameState.players[0];
+      const p2 = gameState.players[1];
 
-      const nextPlayer = gameState.players[(gameState.activePlayerIndex + 1) % gameState.players.length];
-      nextUpText.innerText = `Następny: ${nextPlayer.name}`;
+      document.getElementById('chessP1Name').innerText = p1.name;
+      document.getElementById('chessP2Name').innerText = p2.name;
 
-      gameState.players.forEach((player, idx) => {
-        const isActive = idx === gameState.activePlayerIndex;
-        const badge = document.createElement('div');
-        badge.className = `flex items-center gap-2 px-3 py-1.5 rounded-xl border transition-all text-xs font-bold whitespace-nowrap ${
-          isActive 
-            ? 'bg-slate-800 border-amber-500 text-white shadow-md ring-1 ring-amber-500/50 scale-105' 
-            : 'bg-slate-900/60 border-slate-800 text-slate-400 opacity-70'
-        }`;
-
-        badge.innerHTML = `
-          <span class="w-3 h-3 rounded-full" style="background-color: ${player.colorHex}"></span>
-          <span>${idx + 1}. ${player.name}</span>
-          ${isActive ? '<i class="fa-solid fa-play text-[10px] text-amber-400 ml-1"></i>' : ''}
-        `;
-
-        track.appendChild(badge);
-      });
+      updateChessModeDisplay();
     }
 
+    function updateChessModeDisplay() {
+      const p1 = gameState.players[0];
+      const p2 = gameState.players[1];
+      const activeIdx = gameState.activePlayerIndex;
 
-    function renderScoreboard() {
-      const tbody = document.getElementById('scoreboardBody');
-      tbody.innerHTML = '';
+      const p1Card = document.getElementById('chessP1Card');
+      const p2Card = document.getElementById('chessP2Card');
 
-      // Sort by score descending
-      const sorted = [...gameState.players].sort((a, b) => b.score - a.score);
+      p1Card.style.borderColor = p1.colorHex;
+      p1Card.style.backgroundColor = activeIdx === 0 ? `${p1.colorHex}55` : 'rgba(30, 41, 59, 0.4)';
+      p1Card.style.boxShadow = activeIdx === 0 ? `0 0 30px 5px ${p1.colorHex}66` : 'none';
+      document.getElementById('chessP1Status').innerText = activeIdx === 0 ? 'Twój ruch (Kliknij)' : 'Czeka na ruch';
+      document.getElementById('chessP1Time').innerText = formatChessTime(p1.chessBank);
 
-      sorted.forEach((player) => {
-        const tr = document.createElement('tr');
-        tr.className = 'hover:bg-slate-800/40 transition';
-
-        tr.innerHTML = `
-          <td class="py-3 px-3 font-semibold text-white flex items-center gap-2">
-            <span class="w-3 h-3 rounded-full flex-shrink-0" style="background-color: ${player.colorHex}"></span>
-            <span>${player.name}</span>
-          </td>
-          <td class="py-3 px-3 text-center font-bold text-amber-400">
-            ${player.wins}
-          </td>
-          <td class="py-3 px-3 text-right font-black text-base ${player.score >= 0 ? 'text-emerald-400' : 'text-red-400'}">
-            ${player.score > 0 ? '+' : ''}${player.score}
-          </td>
-          <td class="py-3 px-3 text-right">
-            <button onclick="quickEditScore(${player.id})" class="p-1.5 text-slate-400 hover:text-amber-400 transition" title="Edytuj punkty">
-              <i class="fa-solid fa-pen-to-square text-xs"></i>
-            </button>
-          </td>
-        `;
-
-        tbody.appendChild(tr);
-      });
+      p2Card.style.borderColor = p2.colorHex;
+      p2Card.style.backgroundColor = activeIdx === 1 ? `${p2.colorHex}55` : 'rgba(30, 41, 59, 0.4)';
+      p2Card.style.boxShadow = activeIdx === 1 ? `0 0 30px 5px ${p2.colorHex}66` : 'none';
+      document.getElementById('chessP2Status').innerText = activeIdx === 1 ? 'Twój ruch (Kliknij)' : 'Czeka na ruch';
+      document.getElementById('chessP2Time').innerText = formatChessTime(p2.chessBank);
     }
 
-    function openEndRoundModal() {
-      pauseTurnTimer();
-      const modal = document.getElementById('endRoundModal');
-      const container = document.getElementById('modalPlayerScores');
-      container.innerHTML = '';
-
-      gameState.players.forEach((player, idx) => {
-        const div = document.createElement('div');
-        div.className = 'bg-slate-900/80 p-3 rounded-xl border border-slate-800 space-y-2';
-
-        div.innerHTML = `
-          <div class="flex items-center justify-between">
-            <span class="font-bold text-sm text-white flex items-center gap-2">
-              <span class="w-3 h-3 rounded-full" style="background-color: ${player.colorHex}"></span>
-        <!-- BIG NEXT TURN BUTTON -->
-        <div class="mt-6">
-          <button id="nextTurnBtn" onclick="nextTurn()" class="w-full py-4 rounded-2xl font-black text-xl tracking-wider shadow-lg transform active:scale-98 transition flex items-center justify-center gap-3 border">
-            <span>ZAKOŃCZ TURĘ</span>
-            <i class="fa-solid fa-circle-chevron-right text-2xl"></i>
-          </button>
-        </div>
-      </div>
-
-          <div id="penaltyBox_${player.id}" class="flex items-center justify-between gap-3 pt-1">
-            <span class="text-xs text-slate-400">Suma na klockach (punkty ujemne):</span>
-            <input type="number" id="penaltyInput_${player.id}" value="0" min="0" class="w-24 bg-slate-800 border border-slate-700 rounded-lg px-3 py-1 text-right text-sm font-bold text-red-400 focus:outline-none focus:border-red-500">
-          </div>
-        `;
-
-        container.appendChild(div);
-      });
-
-      modal.classList.remove('hidden');
-    }
-
-    function toggleWinnerInput(winnerId) {
-      gameState.players.forEach(p => {
-        const input = document.getElementById(`penaltyInput_${p.id}`);
-        if (input) {
-          if (p.id === winnerId) {
-            input.value = "0";
-            input.disabled = true;
-            input.classList.add('opacity-30');
-          } else {
-            input.disabled = false;
-            input.classList.remove('opacity-30');
-          }
-        }
-      });
-    }
-
-    function closeEndRoundModal() {
-      document.getElementById('endRoundModal').classList.add('hidden');
-      resumeTurnTimer();
-    }
-
-    function saveRoundScores() {
-      const selectedWinnerRadio = document.querySelector('input[name="roundWinner"]:checked');
-      if (!selectedWinnerRadio) return;
-
-      const winnerId = parseInt(selectedWinnerRadio.value);
-      let totalPenaltySum = 0;
-
-      // Calculate penalties
-      gameState.players.forEach(p => {
-        if (p.id !== winnerId) {
-          const input = document.getElementById(`penaltyInput_${p.id}`);
-          const penalty = Math.abs(parseInt(input.value) || 0);
-          p.score -= penalty;
-          totalPenaltySum += penalty;
-        } else {
-          p.wins += 1;
-        }
-      });
-
-      // Winner gets sum of all penalties as positive points
-      const winner = gameState.players.find(p => p.id === winnerId);
-      if (winner) {
-        winner.score += totalPenaltySum;
-      }
-
-      gameState.roundNumber++;
-      closeEndRoundModal();
-      renderScoreboard();
-      showToast(`Runda ${gameState.roundNumber - 1} zakończona! Zwycięzca: ${winner.name} (+${totalPenaltySum} pkt)`);
-    }
-
-    function quickEditScore(playerId) {
-      const player = gameState.players.find(p => p.id === playerId);
-      if (!player) return;
-
-      const newScoreStr = prompt(`Wpisz nowy łączny wynik dla gracza ${player.name}:`, player.score);
-      if (newScoreStr !== null) {
-        const val = parseInt(newScoreStr);
-        if (!isNaN(val)) {
-          player.score = val;
-          renderScoreboard();
-          showToast(`Zaktualizowano wynik: ${player.name}`);
-        }
+    function handleChessCardClick(clickedIndex) {
+      if (gameState.activePlayerIndex === clickedIndex) {
+        nextTurn();
       }
     }
 
-    /* Helper Toast Notification */
+    function formatChessTime(totalSecs) {
+      const m = Math.floor(Math.max(0, totalSecs) / 60);
+      const s = Math.max(0, totalSecs) % 60;
+      return `${m}:${s < 10 ? '0' : ''}${s}`;
+    }
+
     function showToast(message) {
       const toast = document.getElementById('toast');
       const toastMsg = document.getElementById('toastMsg');
@@ -867,9 +1006,28 @@
       }, 2500);
     }
 
-    // Initialize application on load
     window.onload = function() {
       renderSetupPlayerList();
+
+      // Add touch/click scale effect for circular timer
+      const timerContainer = document.getElementById('timerCircleContainer');
+      if (timerContainer) {
+        timerContainer.addEventListener('mousedown', () => {
+          timerContainer.style.transform = 'scale(1.05)';
+        });
+        timerContainer.addEventListener('mouseup', () => {
+          timerContainer.style.transform = 'scale(1)';
+        });
+        timerContainer.addEventListener('mouseleave', () => {
+          timerContainer.style.transform = 'scale(1)';
+        });
+        timerContainer.addEventListener('touchstart', () => {
+          timerContainer.style.transform = 'scale(1.05)';
+        });
+        timerContainer.addEventListener('touchend', () => {
+          timerContainer.style.transform = 'scale(1)';
+        });
+      }
     };
   </script>
 </body>
