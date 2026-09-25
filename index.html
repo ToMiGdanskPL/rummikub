@@ -80,12 +80,12 @@
   <header class="w-full bg-slate-900/80 border-b border-slate-800 px-4 py-3 sticky top-0 z-40 backdrop-blur-md">
     <div class="max-w-4xl mx-auto flex items-center justify-between">
       <div class="flex items-center gap-3">
-        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-500 to-red-600 flex items-center justify-center shadow-lg font-black text-xl text-white tracking-wider border border-amber-300/30">
-          R
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-500 to-red-600 flex items-center justify-center shadow-lg font-black text-lg text-white tracking-wider border border-amber-300/30">
+          RT
         </div>
         <div>
           <h1 class="font-bold text-lg leading-tight tracking-wide text-white">Rummikub Timer</h1>
-          <p class="text-xs text-slate-400">Stoper tury i statystyki (Max 4 graczy)</p>
+          <p class="text-xs text-slate-400">wersja 1.0.0</p>
         </div>
       </div>
 
@@ -120,9 +120,9 @@
             <span class="text-lg">30s</span>
             <span class="text-[10px] text-slate-400 font-normal">Szybka gra</span>
           </button>
-          <button onclick="selectPresetTime(60)" id="timeBtn60" class="time-opt-btn p-3 rounded-xl border text-center transition font-semibold text-sm flex flex-col items-center gap-1 border-amber-500 bg-amber-500/20 text-amber-300">
+          <button onclick="selectPresetTime(60)" id="timeBtn60" class="time-opt-btn p-3 rounded-xl border text-center transition font-semibold text-sm flex flex-col items-center gap-1 border-slate-700 bg-slate-800/60 hover:bg-slate-700">
             <span class="text-lg">60s</span>
-            <span class="text-[10px] text-amber-300/70 font-normal">Standard</span>
+            <span class="text-[10px] text-slate-400 font-normal">Standard</span>
           </button>
           <button onclick="selectPresetTime(90)" id="timeBtn90" class="time-opt-btn p-3 rounded-xl border text-center transition font-semibold text-sm flex flex-col items-center gap-1 border-slate-700 bg-slate-800/60 hover:bg-slate-700">
             <span class="text-lg">90s</span>
@@ -135,7 +135,7 @@
         </div>
 
         <!-- Custom Time Tile -->
-        <div id="customTimeTile" class="p-3.5 rounded-xl border transition border-slate-700 bg-slate-800/60 flex items-center justify-between gap-3">
+        <div id="customTimeTile" class="p-3.5 rounded-xl border transition border-amber-500 bg-amber-500/20 text-amber-300 flex items-center justify-between gap-3">
           <div onclick="selectCustomTime(true)" class="cursor-pointer flex-grow flex items-center gap-3">
             <div class="w-10 h-10 rounded-lg bg-slate-700/80 flex items-center justify-center text-amber-400 font-bold text-lg">
               <i class="fa-solid fa-clock-rotate-left"></i>
@@ -160,7 +160,7 @@
         </div>
 
         <!-- Chess Time Tile (Visible ONLY when exactly 2 players are selected) -->
-        <div id="chessTimeTile" class="p-3.5 rounded-xl border transition border-slate-700 bg-slate-800/60 flex items-center justify-between gap-3 hidden">
+        <div id="chessTimeTile" class="p-3.5 rounded-xl border transition border-slate-700 bg-slate-800/60 flex items-center justify-between gap-3">
           <div onclick="selectChessTime()" class="cursor-pointer flex-grow flex items-center gap-3">
             <div class="w-10 h-10 rounded-lg bg-purple-500/20 text-purple-400 border border-purple-500/30 flex items-center justify-center font-bold text-lg">
               <i class="fa-solid fa-chess-knight"></i>
@@ -198,9 +198,9 @@
           <!-- Player Count Buttons (2, 3, 4 Max) -->
           <div class="flex items-center bg-slate-900 p-1 rounded-xl border border-slate-800">
             <span class="text-xs text-slate-400 font-semibold px-2">Ilość:</span>
-            <button onclick="setPlayerCount(2)" class="count-btn px-3 py-1 rounded-lg text-xs font-bold transition hover:bg-slate-800" data-count="2">2</button>
-            <button onclick="setPlayerCount(3)" class="count-btn px-3 py-1 rounded-lg text-xs font-bold transition hover:bg-slate-800" data-count="3">3</button>
-            <button onclick="setPlayerCount(4)" class="count-btn px-3 py-1 rounded-lg text-xs font-bold transition hover:bg-slate-800 bg-amber-500 text-slate-950" data-count="4">4</button>
+            <button onclick="setPlayerCount(2)" class="count-btn px-3 py-1 rounded-lg text-xs font-bold transition bg-amber-500 text-slate-950" data-count="2">2</button>
+            <button onclick="setPlayerCount(3)" class="count-btn px-3 py-1 rounded-lg text-xs font-bold transition hover:bg-slate-800 text-slate-400" data-count="3">3</button>
+            <button onclick="setPlayerCount(4)" class="count-btn px-3 py-1 rounded-lg text-xs font-bold transition hover:bg-slate-800 text-slate-400" data-count="4">4</button>
           </div>
         </div>
 
@@ -221,7 +221,7 @@
           <span>ROZPOCZNIJ GRĘ</span>
         </button>
 
-        <!-- Chess Mode Button (Shown when Chess Time is selected AND exactly 2 players) -->
+        <!-- Chess Mode Button -->
         <button id="chessModeBtn" onclick="startGame(true)" class="w-full sm:w-auto px-8 py-3.5 rounded-2xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-extrabold text-base tracking-wider shadow-lg transform active:scale-95 transition flex items-center justify-center gap-2 mx-auto border border-purple-400/30 hidden">
           <i class="fa-solid fa-chess text-lg"></i>
           <span>TRYB SZACHOWY</span>
@@ -253,7 +253,7 @@
             <p id="activePlayerSubtext" class="text-xs font-medium text-slate-400 mt-1">Twoja tura - ułóż wyłożenie lub pociągnij kostkę</p>
           </div>
 
-          <!-- Circular Countdown Timer (Clickable to switch turn) -->
+          <!-- Circular Countdown Timer -->
           <div id="timerCircleContainer" onclick="nextTurn()" class="relative w-48 h-48 sm:w-60 sm:h-60 my-2 flex items-center justify-center cursor-pointer group transition-transform duration-100" title="Kliknij, aby przejść do następnego gracza">
             <svg class="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
               <circle cx="50" cy="50" r="42" stroke="currentColor" stroke-width="6" class="text-slate-800" fill="transparent" />
@@ -261,7 +261,7 @@
             </svg>
 
             <div class="absolute flex flex-col items-center justify-center pointer-events-none">
-              <span id="timeDisplay" class="text-5xl sm:text-6xl font-black font-mono tracking-tighter text-white">60</span>
+              <span id="timeDisplay" class="text-5xl sm:text-6xl font-black font-mono tracking-tighter text-white">45</span>
               <span class="text-xs font-bold uppercase tracking-widest text-slate-400 mt-1">sekund</span>
             </div>
           </div>
@@ -305,7 +305,7 @@
       <!-- Split Screen Cards Container -->
       <div class="grid grid-rows-2 gap-4 h-[65vh] w-full max-w-md mx-auto">
         
-        <!-- Player 2 Top Half (Rotated 180 degrees) -->
+        <!-- Player 2 Top Half -->
         <div id="chessP2Card" onclick="handleChessCardClick(1)" class="chess-split-card glass-panel rounded-3xl p-6 flex flex-col items-center justify-center transform rotate-180 border-2 cursor-pointer select-none relative overflow-hidden">
           <div class="text-center">
             <h3 id="chessP2Name" class="text-2xl sm:text-3xl font-black text-white">Gracz 2</h3>
@@ -317,7 +317,7 @@
           <div class="text-xs font-bold uppercase tracking-widest text-slate-400">Dotknij, aby przełączyć</div>
         </div>
 
-        <!-- Player 1 Bottom Half (0 degrees) -->
+        <!-- Player 1 Bottom Half -->
         <div id="chessP1Card" onclick="handleChessCardClick(0)" class="chess-split-card glass-panel rounded-3xl p-6 flex flex-col items-center justify-center border-2 cursor-pointer select-none relative overflow-hidden">
           <div class="text-center">
             <h3 id="chessP1Name" class="text-2xl sm:text-3xl font-black text-white">Gracz 1</h3>
@@ -438,6 +438,10 @@
     <span id="toastMsg" class="text-sm font-medium">Powiadomienie</span>
   </div>
 
+  <footer class="w-full text-center py-3 text-xs text-slate-500 border-t border-slate-900/80 bg-slate-950/80">
+    Created by ToMi with AI
+  </footer>
+
   <script>
     const PLAYER_COLORS = [
       { id: 'red', name: 'Czerwony', hex: '#ef4444' },
@@ -450,23 +454,22 @@
       { id: 'pink', name: 'Różowy', hex: '#ec4899' }
     ];
 
+    // Default configuration: 2 players (P1: 0°, P2: 90°), default time mode: custom (45s)
     let gameState = {
-      turnDuration: 60,
+      turnDuration: 45,
       customTime: 45,
       chessTime: 600,
-      selectedTimeType: 'preset',
+      selectedTimeType: 'custom',
       isChessMode: false,
       soundEnabled: true,
       players: [
         { id: 1, name: 'Gracz 1', colorHex: '#ef4444', rotation: 0, chessBank: 600, turnsPlayed: 0, totalThinkingTime: 0 },
-        { id: 2, name: 'Gracz 2', colorHex: '#3b82f6', rotation: 180, chessBank: 600, turnsPlayed: 0, totalThinkingTime: 0 },
-        { id: 3, name: 'Gracz 3', colorHex: '#f97316', rotation: 90, chessBank: 600, turnsPlayed: 0, totalThinkingTime: 0 },
-        { id: 4, name: 'Gracz 4', colorHex: '#64748b', rotation: 270, chessBank: 600, turnsPlayed: 0, totalThinkingTime: 0 }
+        { id: 2, name: 'Gracz 2', colorHex: '#3b82f6', rotation: 90, chessBank: 600, turnsPlayed: 0, totalThinkingTime: 0 }
       ],
       activePlayerIndex: 0,
       roundNumber: 1,
       totalTurnsCount: 1,
-      remainingTime: 60,
+      remainingTime: 45,
       turnStartTime: Date.now(),
       isTimerRunning: false,
       timerInterval: null
@@ -744,10 +747,7 @@
         btn.className = 'time-opt-btn p-3 rounded-xl border text-center transition font-semibold text-sm flex flex-col items-center gap-1 border-slate-700 bg-slate-800/60 hover:bg-slate-700 text-slate-300';
       });
 
-      // Explicitly unhighlight and reset custom time tile style
       document.getElementById('customTimeTile').className = 'p-3.5 rounded-xl border transition border-slate-700 bg-slate-800/60 flex items-center justify-between gap-3';
-      
-      // Highlight chess time tile
       document.getElementById('chessTimeTile').className = 'p-3.5 rounded-xl border transition border-purple-500 bg-purple-500/20 text-purple-300 flex items-center justify-between gap-3';
 
       const mins = Math.floor(gameState.chessTime / 60);
@@ -773,7 +773,8 @@
     function setPlayerCount(count) {
       count = Math.min(4, Math.max(2, count));
       const currentCount = gameState.players.length;
-      const defaultRotations = [0, 180, 90, 270];
+      // Default rotations mapping: P1 -> 0°, P2 -> 90°, P3 -> 180°, P4 -> 270°
+      const defaultRotations = [0, 90, 180, 270];
 
       if (count > currentCount) {
         for (let i = currentCount; i < count; i++) {
