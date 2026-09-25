@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Rummikub Timer v1.0.4</title>
+  <title>Rummikub Timer v1.0.7</title>
   
   <!-- App Favicon for Desktop & Web Browsers -->
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='28' fill='url(%23grad)'/><defs><linearGradient id='grad' x1='0%25' y1='0%25' x2='100%25' y2='100%25'><stop offset='0%25' stop-color='%23f59e0b'/><stop offset='100%25' stop-color='%23dc2626'/></linearGradient></defs><text x='50' y='65' font-family='sans-serif' font-weight='900' font-size='52' fill='white' text-anchor='middle'>RT</text></svg>">
@@ -250,7 +250,7 @@
         </div>
         <div>
           <h1 class="header-title font-bold text-lg leading-tight tracking-wide text-white">Rummikub Timer</h1>
-          <p class="text-xs text-slate-400">wersja 1.0.4</p>
+          <p class="text-xs text-slate-400">wersja 1.0.7</p>
         </div>
       </div>
 
@@ -281,7 +281,6 @@
     <section id="setupView" class="w-full space-y-6 animate-fade-in">
       <div class="text-center space-y-2">
         <span class="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-amber-500/10 text-amber-500 border border-amber-500/20">Przygotowanie Stołu</span>
-        <h2 class="section-title text-2xl sm:text-3xl font-extrabold text-white">Konfiguracja Graczy i Zasada Czasu</h2>
       </div>
 
       <div class="glass-panel rounded-2xl p-4 sm:p-6 space-y-4">
@@ -685,7 +684,7 @@
       theme: 'dark', // 'dark' or 'light'
       players: [
         { id: 1, name: 'Gracz 1', colorHex: '#ef4444', rotation: 0, chessBank: 600, turnsPlayed: 0, totalThinkingTime: 0 },
-        { id: 2, name: 'Gracz 2', colorHex: '#3b82f6', rotation: 90, chessBank: 600, turnsPlayed: 0, totalThinkingTime: 0 }
+        { id: 2, name: 'Gracz 2', colorHex: '#3b82f6', rotation: 180, chessBank: 600, turnsPlayed: 0, totalThinkingTime: 0 }
       ],
       activePlayerIndex: 0,
       roundNumber: 1,
@@ -694,7 +693,9 @@
       turnStartTimestamp: 0,
       pauseTimestamp: 0,
       isTimerRunning: false,
-      timerInterval: null
+      timerInterval: null,
+      currentVisualRotation: 0,
+      lastActivePlayerRotationBase: 0
     };
 
     let synth = null;
@@ -1045,7 +1046,13 @@
     function setPlayerCount(count) {
       count = Math.min(4, Math.max(2, count));
       const currentCount = gameState.players.length;
-      const defaultRotations = [0, 90, 180, 270];
+      
+      const rotationsMap = {
+        2: [0, 180],
+        3: [0, 120, 240],
+        4: [0, 90, 180, 270]
+      };
+      const defaultRotations = rotationsMap[count] || [0, 90, 180, 270];
 
       if (count > currentCount) {
         for (let i = currentCount; i < count; i++) {
@@ -1056,7 +1063,7 @@
             id: Date.now() + i,
             name: `Gracz ${i + 1}`,
             colorHex: available.hex,
-            rotation: defaultRotations[i % defaultRotations.length],
+            rotation: defaultRotations[i],
             chessBank: gameState.chessTime,
             turnsPlayed: 0,
             totalThinkingTime: 0
@@ -1065,6 +1072,11 @@
       } else if (count < currentCount) {
         gameState.players = gameState.players.slice(0, count);
       }
+
+      // Re-apply standard default rotations for the chosen player count
+      gameState.players.forEach((p, i) => {
+        p.rotation = defaultRotations[i];
+      });
 
       if (gameState.players.length !== 2 && gameState.selectedTimeType === 'chess') {
         selectCustomTime(false);
@@ -1085,7 +1097,7 @@
     function removePlayer(index) {
       if (gameState.players.length <= 2) return;
       gameState.players.splice(index, 1);
-      renderSetupPlayerList();
+      setPlayerCount(gameState.players.length);
     }
 
     function movePlayer(index, direction) {
@@ -1119,6 +1131,11 @@
       gameState.turnStartTimestamp = now;
       gameState.roundNumber = 1;
       gameState.totalTurnsCount = 1;
+
+      // Initialize continuous rotation trackers
+      const firstRotation = gameState.players[0] ? (gameState.players[0].rotation || 0) : 0;
+      gameState.currentVisualRotation = firstRotation;
+      gameState.lastActivePlayerRotationBase = firstRotation;
 
       document.getElementById('setupView').classList.add('hidden');
 
@@ -1326,8 +1343,18 @@
         card.style.boxShadow = `0 0 35px 2px ${activePlayer.colorHex}44`;
       }
 
+      // Calculate continuous clockwise rotation without rewinding backwards
+      const targetBase = activePlayer.rotation || 0;
+      const prevBase = gameState.lastActivePlayerRotationBase !== undefined ? gameState.lastActivePlayerRotationBase : targetBase;
+
+      let diff = (targetBase - prevBase) % 360;
+      if (diff < 0) diff += 360;
+
+      gameState.currentVisualRotation = (gameState.currentVisualRotation || 0) + diff;
+      gameState.lastActivePlayerRotationBase = targetBase;
+
       if (rotBox) {
-        rotBox.style.transform = `rotate(${activePlayer.rotation || 0}deg)`;
+        rotBox.style.transform = `rotate(${gameState.currentVisualRotation}deg)`;
       }
 
       if (nextTurnBtn) {
