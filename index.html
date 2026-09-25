@@ -379,46 +379,44 @@
         </div>
 
         <!-- Dynamic Player List -->
-        <div id="playerSetupList" class="space-y-3">
-          <!-- Dynamically generated rows -->
-        </div>
-
-        <button id="addPlayerBtn" onclick="addPlayer()" class="w-full py-2.5 rounded-xl border border-dashed border-slate-600/60 hover:border-slate-400 text-slate-400 hover:text-slate-600 transition text-sm font-medium flex items-center justify-center gap-2 bg-slate-800/30">
-          <i class="fa-solid fa-plus text-xs"></i> Dodaj kolejnego gracza
-        </button>
+      <div id="playerSetupList" class="space-y-3">
+        <!-- Dynamically generated rows -->
       </div>
 
-      <!-- Overall Game Duration Box (Hidden when Chess Mode is active) -->
-      <div id="gameDurationBox" class="glass-panel rounded-2xl p-4 sm:p-6 space-y-3">
-        <div class="flex items-center justify-between gap-3">
-          <div class="flex items-center gap-3">
-            <div class="w-10 h-10 rounded-lg bg-amber-500/20 text-amber-400 border border-amber-500/30 flex items-center justify-center font-bold text-lg flex-shrink-0">
-              <i class="fa-solid fa-hourglass-half"></i>
-            </div>
-            <div>
-              <h3 class="text-sm font-bold uppercase tracking-wider text-slate-400 flex items-center gap-2">
-                Czas Gry
-              </h3>
-              <div class="text-sm font-bold time-val-text flex items-center gap-2">
-                <span>Całkowity czas meczu:</span>
-                <span id="gameDurationValDisplay" class="text-amber-500 text-base font-extrabold">25 min</span>
-              </div>
-            </div>
-          </div>
+      <button id="addPlayerBtn" onclick="addPlayer()" class="w-full py-2.5 rounded-xl border border-dashed border-slate-600/60 hover:border-slate-400 text-slate-400 hover:text-slate-600 transition text-sm font-medium flex items-center justify-center gap-2 bg-slate-800/30">
+        <i class="fa-solid fa-plus text-xs"></i> Dodaj kolejnego gracza
+      </button>
+    </div>
 
-          <div class="tile-controls-box flex items-center gap-1 bg-slate-900/60 p-1 rounded-xl border border-slate-700/60 flex-shrink-0">
-            <button onclick="adjustGameDuration(-1)" class="tile-ctrl-btn w-8 h-8 rounded-lg bg-slate-800 hover:bg-slate-700 text-white font-bold text-base transition active:scale-90 flex items-center justify-center" title="-1 minuta">
-              -
-            </button>
-            <button onclick="adjustGameDuration(1)" class="tile-ctrl-btn w-8 h-8 rounded-lg bg-slate-800 hover:bg-slate-700 text-white font-bold text-base transition active:scale-90 flex items-center justify-center" title="+1 minuta">
-              +
-            </button>
+    <!-- Overall Game Duration Box (Hidden when Chess Mode is active) -->
+    <div id="gameDurationBox" class="glass-panel rounded-2xl p-4 sm:p-6 space-y-3">
+      <div class="flex items-center justify-between gap-3">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-lg bg-amber-500/20 text-amber-400 border border-amber-500/30 flex items-center justify-center font-bold text-lg flex-shrink-0">
+            <i class="fa-solid fa-hourglass-half"></i>
+          </div>
+          <div>
+            <div class="text-sm font-bold time-val-text flex items-center gap-2">
+              <span class="tile-title-text">Całkowity czas:</span>
+              <span id="gameDurationValDisplay" class="text-amber-500 text-base font-extrabold">25 min</span>
+            </div>
+            <p class="tile-sub-text text-xs text-slate-400">Regulacja ±1 min</p>
           </div>
         </div>
-      </div>
 
-      <div class="pt-2 text-center space-y-3">
-        <!-- Standard Start Game Button -->
+        <div class="tile-controls-box flex items-center gap-1 bg-slate-900/60 p-1 rounded-xl border border-slate-700/60 flex-shrink-0">
+          <button onclick="adjustGameDuration(-1)" class="tile-ctrl-btn w-8 h-8 rounded-lg bg-slate-800 hover:bg-slate-700 text-white font-bold text-base transition active:scale-90 flex items-center justify-center" title="-1 minuta">
+            -
+          </button>
+          <button onclick="adjustGameDuration(1)" class="tile-ctrl-btn w-8 h-8 rounded-lg bg-slate-800 hover:bg-slate-700 text-white font-bold text-base transition active:scale-90 flex items-center justify-center" title="+1 minuta">
+            +
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="pt-2 text-center space-y-3">
+      <!-- Standard Start Game Button -->
         <button id="startGameBtn" onclick="startGame(false)" class="w-full sm:w-auto px-10 py-4 rounded-2xl bg-gradient-to-r from-amber-500 via-orange-500 to-red-600 hover:from-amber-400 hover:to-red-500 text-slate-950 font-black text-lg tracking-wider shadow-xl shadow-orange-950/20 transform active:scale-95 transition flex items-center justify-center gap-3 mx-auto border border-amber-300/40">
           <i class="fa-solid fa-play text-slate-950 text-xl"></i>
           <span>ROZPOCZNIJ GRĘ</span>
@@ -582,7 +580,7 @@
             <i class="fa-solid fa-hourglass-half text-xs"></i> 2. Całkowity czas gry
           </h4>
           <p class="text-xs text-slate-400 leading-relaxed">
-            Ustaw limit czasu całego meczu (domyślnie 25 minut, regulowany z krokiem 1 minuty). Odliczanie czasu meczu odbywa się podczas każdej tury.
+            Ustaw limit czasu całej gry (domyślnie 25 minut, regulowany z krokiem 1 minuty). Odliczanie czasu odbywa się podczas każdej tury.
           </p>
         </div>
 
