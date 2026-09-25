@@ -667,7 +667,7 @@
       { id: 'pink', name: 'Różowy', hex: '#ec4899' }
     ];
 
-    // Default configuration: 2 players, default time mode: custom (45s), game duration: 25 min
+    // Default configuration
     let gameState = {
       turnDuration: 45,
       customTime: 45,
@@ -679,7 +679,7 @@
       selectedTimeType: 'custom',
       isChessMode: false,
       soundEnabled: true,
-      theme: 'dark', // 'dark' or 'light'
+      theme: 'dark',
       players: [
         { id: 1, name: 'Gracz 1', colorHex: '#ef4444', rotation: 0, chessBank: 600, turnsPlayed: 0, totalThinkingTime: 0 },
         { id: 2, name: 'Gracz 2', colorHex: '#3b82f6', rotation: 180, chessBank: 600, turnsPlayed: 0, totalThinkingTime: 0 }
@@ -1071,7 +1071,6 @@
         gameState.players = gameState.players.slice(0, count);
       }
 
-      // Re-apply standard default rotations for the chosen player count
       gameState.players.forEach((p, i) => {
         p.rotation = defaultRotations[i];
       });
@@ -1130,7 +1129,6 @@
       gameState.roundNumber = 1;
       gameState.totalTurnsCount = 1;
 
-      // Initialize continuous rotation trackers
       const firstRotation = gameState.players[0] ? (gameState.players[0].rotation || 0) : 0;
       gameState.currentVisualRotation = firstRotation;
       gameState.lastActivePlayerRotationBase = firstRotation;
@@ -1187,22 +1185,24 @@
         if (!gameState.isTimerRunning) return;
 
         const currentTime = Date.now();
-        const turnElapsedMs = currentTime - gameState.turnStartTimestamp;
-        const totalMatchElapsedMs = gameState.accumulatedMatchMs + (currentTime - gameState.matchStartTimestamp);
 
         if (gameState.isChessMode) {
           const activeP = getActivePlayer();
-          const elapsedSecs = Math.floor(turnElapsedMs / 1000);
-          const initialBank = activeP.chessBankInitial || activeP.chessBank;
-          activeP.chessBank = Math.max(0, initialBank - elapsedSecs);
+          
+          // Poprawiony wyliczany ubytek czasu (100 ms na iterację)
+          activeP.chessBank = Math.max(0, activeP.chessBank - 0.1);
           updateChessModeDisplay();
 
           if (activeP.chessBank <= 0) {
             clearInterval(gameState.timerInterval);
+            gameState.isTimerRunning = false;
             playSound('timeout');
             showToast(`Czas minął dla ${activeP.name}!`);
           }
         } else {
+          const turnElapsedMs = currentTime - gameState.turnStartTimestamp;
+          const totalMatchElapsedMs = gameState.accumulatedMatchMs + (currentTime - gameState.matchStartTimestamp);
+
           const turnElapsedSecs = Math.floor(turnElapsedMs / 1000);
           const matchElapsedSecs = Math.floor(totalMatchElapsedMs / 1000);
 
@@ -1297,11 +1297,6 @@
       }
       gameState.totalTurnsCount++;
 
-      const activeP = getActivePlayer();
-      if (gameState.isChessMode) {
-        activeP.chessBankInitial = activeP.chessBank;
-      }
-
       gameState.turnStartTimestamp = now;
       gameState.remainingTime = gameState.turnDuration;
 
@@ -1341,7 +1336,6 @@
         card.style.boxShadow = `0 0 35px 2px ${activePlayer.colorHex}44`;
       }
 
-      // Calculate continuous clockwise rotation without rewinding backwards
       const targetBase = activePlayer.rotation || 0;
       const prevBase = gameState.lastActivePlayerRotationBase !== undefined ? gameState.lastActivePlayerRotationBase : targetBase;
 
@@ -1442,7 +1436,7 @@
 
     function formatChessTime(totalSecs) {
       const m = Math.floor(Math.max(0, totalSecs) / 60);
-      const s = Math.max(0, totalSecs) % 60;
+      const s = Math.floor(Math.max(0, totalSecs) % 60);
       return `${m}:${s < 10 ? '0' : ''}${s}`;
     }
 
