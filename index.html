@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Rummikub Timer</title>
+  <title>Rummikub Timer v1.0.4</title>
   
   <!-- App Favicon for Desktop & Web Browsers -->
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='28' fill='url(%23grad)'/><defs><linearGradient id='grad' x1='0%25' y1='0%25' x2='100%25' y2='100%25'><stop offset='0%25' stop-color='%23f59e0b'/><stop offset='100%25' stop-color='%23dc2626'/></linearGradient></defs><text x='50' y='65' font-family='sans-serif' font-weight='900' font-size='52' fill='white' text-anchor='middle'>RT</text></svg>">
@@ -245,12 +245,12 @@
   <header class="header-bar w-full border-b px-4 py-3 sticky top-0 z-40 backdrop-blur-md transition-colors duration-300">
     <div class="max-w-4xl mx-auto flex items-center justify-between">
       <div class="flex items-center gap-3">
-        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-500 to-red-600 flex items-center justify-center shadow-lg font-black text-lg text-white tracking-wider border border-amber-300/30 flex-shrink-0">
+        <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-amber-500 to-red-600 flex items-center justify-center text-slate-950 font-black text-lg shadow-md border border-amber-300/30">
           RT
         </div>
         <div>
           <h1 class="header-title font-bold text-lg leading-tight tracking-wide text-white">Rummikub Timer</h1>
-          <p class="text-xs text-slate-400">wersja 1.0.1</p>
+          <p class="text-xs text-slate-400">wersja 1.0.4</p>
         </div>
       </div>
 
@@ -277,6 +277,7 @@
 
   <main class="flex-grow flex flex-col justify-center items-center p-3 sm:p-6 max-w-4xl w-full mx-auto">
 
+    <!-- SETUP VIEW -->
     <section id="setupView" class="w-full space-y-6 animate-fade-in">
       <div class="text-center space-y-2">
         <span class="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-amber-500/10 text-amber-500 border border-amber-500/20">Przygotowanie Stołu</span>
@@ -388,6 +389,35 @@
         </button>
       </div>
 
+      <!-- Overall Game Duration Box (Hidden when Chess Mode is active) -->
+      <div id="gameDurationBox" class="glass-panel rounded-2xl p-4 sm:p-6 space-y-3">
+        <div class="flex items-center justify-between gap-3">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-lg bg-amber-500/20 text-amber-400 border border-amber-500/30 flex items-center justify-center font-bold text-lg flex-shrink-0">
+              <i class="fa-solid fa-hourglass-half"></i>
+            </div>
+            <div>
+              <h3 class="text-sm font-bold uppercase tracking-wider text-slate-400 flex items-center gap-2">
+                Czas Gry
+              </h3>
+              <div class="text-sm font-bold time-val-text flex items-center gap-2">
+                <span>Całkowity czas meczu:</span>
+                <span id="gameDurationValDisplay" class="text-amber-500 text-base font-extrabold">25 min</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="tile-controls-box flex items-center gap-1 bg-slate-900/60 p-1 rounded-xl border border-slate-700/60 flex-shrink-0">
+            <button onclick="adjustGameDuration(-1)" class="tile-ctrl-btn w-8 h-8 rounded-lg bg-slate-800 hover:bg-slate-700 text-white font-bold text-base transition active:scale-90 flex items-center justify-center" title="-1 minuta">
+              -
+            </button>
+            <button onclick="adjustGameDuration(1)" class="tile-ctrl-btn w-8 h-8 rounded-lg bg-slate-800 hover:bg-slate-700 text-white font-bold text-base transition active:scale-90 flex items-center justify-center" title="+1 minuta">
+              +
+            </button>
+          </div>
+        </div>
+      </div>
+
       <div class="pt-2 text-center space-y-3">
         <!-- Standard Start Game Button -->
         <button id="startGameBtn" onclick="startGame(false)" class="w-full sm:w-auto px-10 py-4 rounded-2xl bg-gradient-to-r from-amber-500 via-orange-500 to-red-600 hover:from-amber-400 hover:to-red-500 text-slate-950 font-black text-lg tracking-wider shadow-xl shadow-orange-950/20 transform active:scale-95 transition flex items-center justify-center gap-3 mx-auto border border-amber-300/40">
@@ -403,17 +433,19 @@
       </div>
     </section>
 
+    <!-- STANDARD GAME PLAY VIEW -->
     <section id="gameView" class="w-full space-y-6 hidden animate-fade-in">
 
       <!-- Active Turn & Countdown Wheel Card -->
       <div id="activePlayerCard" class="glass-panel rounded-3xl p-5 sm:p-8 text-center relative overflow-hidden player-card-glow border-2 transition-all duration-300">
         
-        <div class="flex items-center justify-between mb-3">
+        <div class="flex items-center justify-between mb-3 flex-wrap gap-2">
           <span id="turnCounterBadge" class="px-3 py-1 rounded-full text-xs font-semibold bg-slate-800 text-slate-300 border border-slate-700">
             Runda 1 • Tura 1
           </span>
-          <span id="activePlayerPosBadge" class="text-xs font-bold px-2.5 py-1 rounded-lg bg-slate-800 text-slate-400">
-            Pozycja: 0°
+          <span id="matchDurationBadge" class="px-3 py-1 rounded-full text-xs font-bold bg-amber-500/20 text-amber-400 border border-amber-500/30 flex items-center gap-1.5">
+            <i class="fa-solid fa-hourglass-half text-[10px]"></i>
+            <span id="matchDurationText">Mecz: 25:00</span>
           </span>
         </div>
 
@@ -469,6 +501,7 @@
 
     </section>
 
+    <!-- CHESS MODE VIEW -->
     <section id="chessGameView" class="w-full space-y-4 hidden animate-fade-in">
       <div class="text-center">
         <span class="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-purple-500/20 text-purple-400 border border-purple-500/30">
@@ -546,8 +579,17 @@
         </div>
 
         <div class="space-y-1.5">
+          <h4 class="font-bold modal-text text-white flex items-center gap-2 text-amber-500">
+            <i class="fa-solid fa-hourglass-half text-xs"></i> 2. Całkowity czas gry
+          </h4>
+          <p class="text-xs text-slate-400 leading-relaxed">
+            Ustaw limit czasu całego meczu (domyślnie 25 minut, regulowany z krokiem 1 minuty). Odliczanie czasu meczu odbywa się podczas każdej tury.
+          </p>
+        </div>
+
+        <div class="space-y-1.5">
           <h4 class="font-bold modal-text text-white flex items-center gap-2 text-purple-500">
-            <i class="fa-solid fa-chess-knight text-xs"></i> 2. Tryb szachowy (2 graczy)
+            <i class="fa-solid fa-chess-knight text-xs"></i> 3. Tryb szachowy (2 graczy)
           </h4>
           <p class="text-xs text-slate-400 leading-relaxed">
             W trybie szachowym każdy z 2 graczy otrzymuje wspólny bank czasu. Po wykonaniu ruchu dotyka swojego panelu, aby zatrzymać swój zegar i uruchomić zegar przeciwnika.
@@ -556,7 +598,7 @@
 
         <div class="space-y-1.5">
           <h4 class="font-bold modal-text text-white flex items-center gap-2 text-emerald-500">
-            <i class="fa-solid fa-users text-xs"></i> 3. Statystyki i Podsumowanie
+            <i class="fa-solid fa-users text-xs"></i> 4. Statystyki i Podsumowanie
           </h4>
           <p class="text-xs text-slate-400 leading-relaxed">
             Po zakończeniu rozgrywki aplikacja wyświetli podsumowanie ze statystykami graczy (łączny czas gry oraz średni czas tury).
@@ -565,10 +607,10 @@
 
         <div class="space-y-1.5">
           <h4 class="font-bold modal-text text-white flex items-center gap-2 text-blue-500">
-            <i class="fa-solid fa-volume-high text-xs"></i> 4. Dźwięki i Powiadomienia
+            <i class="fa-solid fa-volume-high text-xs"></i> 5. Dźwięki i Powiadomienia
           </h4>
           <p class="text-xs text-slate-400 leading-relaxed">
-            Ostatnie 10 sekund każdej tury sygnalizowane jest dźwiękiem ostrzegawczym. Dźwięki można w każdej chwili wyciszyć przyciskiem w górnym pasku.
+            Ostatnie 5 sekund każdej tury sygnalizowane jest dźwiękiem ostrzegawczym. Dźwięki można w każdej chwili wyciszyć przyciskiem w górnym pasku.
           </p>
         </div>
       </div>
@@ -628,11 +670,15 @@
       { id: 'pink', name: 'Różowy', hex: '#ec4899' }
     ];
 
-    // Default configuration: 2 players (P1: 0°, P2: 90°), default time mode: custom (45s)
+    // Default configuration: 2 players, default time mode: custom (45s), game duration: 25 min
     let gameState = {
       turnDuration: 45,
       customTime: 45,
       chessTime: 600,
+      totalGameDurationMinutes: 25,
+      remainingGameSeconds: 25 * 60,
+      accumulatedMatchMs: 0,
+      matchStartTimestamp: 0,
       selectedTimeType: 'custom',
       isChessMode: false,
       soundEnabled: true,
@@ -645,7 +691,8 @@
       roundNumber: 1,
       totalTurnsCount: 1,
       remainingTime: 45,
-      turnStartTime: Date.now(),
+      turnStartTimestamp: 0,
+      pauseTimestamp: 0,
       isTimerRunning: false,
       timerInterval: null
     };
@@ -720,7 +767,6 @@
         showToast('Przełączono na motyw ciemny');
       }
 
-      // Re-render player list and count buttons to apply high-contrast colors
       renderSetupPlayerList();
     }
 
@@ -736,6 +782,7 @@
 
     function renderSetupPlayerList() {
       const container = document.getElementById('playerSetupList');
+      if (!container) return;
       container.innerHTML = '';
 
       const takenColors = gameState.players.map(p => p.colorHex);
@@ -829,7 +876,6 @@
         container.appendChild(row);
       });
 
-      // Update Player Count selector buttons with high contrast classes
       document.querySelectorAll('.count-btn').forEach(btn => {
         const count = parseInt(btn.dataset.count);
         if (count === gameState.players.length) {
@@ -843,19 +889,21 @@
       const addPlayerBtn = document.getElementById('addPlayerBtn');
 
       if (gameState.players.length === 2) {
-        chessTile.classList.remove('hidden');
+        if (chessTile) chessTile.classList.remove('hidden');
       } else {
-        chessTile.classList.add('hidden');
+        if (chessTile) chessTile.classList.add('hidden');
         if (gameState.selectedTimeType === 'chess') {
           selectCustomTime(false);
           return;
         }
       }
 
-      if (gameState.players.length >= 4) {
-        addPlayerBtn.classList.add('hidden');
-      } else {
-        addPlayerBtn.classList.remove('hidden');
+      if (addPlayerBtn) {
+        if (gameState.players.length >= 4) {
+          addPlayerBtn.classList.add('hidden');
+        } else {
+          addPlayerBtn.classList.remove('hidden');
+        }
       }
 
       updateStartButtonsVisibility();
@@ -864,6 +912,7 @@
     function updateStartButtonsVisibility() {
       const startBtn = document.getElementById('startGameBtn');
       const chessBtn = document.getElementById('chessModeBtn');
+      const gameDurationBox = document.getElementById('gameDurationBox');
 
       if (!startBtn || !chessBtn) return;
 
@@ -881,10 +930,19 @@
       if (gameState.selectedTimeType === 'chess' && gameState.players.length === 2) {
         startBtn.classList.add('hidden');
         chessBtn.classList.remove('hidden');
+        if (gameDurationBox) gameDurationBox.classList.add('hidden');
       } else {
         startBtn.classList.remove('hidden');
         chessBtn.classList.add('hidden');
+        if (gameDurationBox) gameDurationBox.classList.remove('hidden');
       }
+    }
+
+    function adjustGameDuration(deltaMinutes) {
+      gameState.totalGameDurationMinutes = Math.max(1, gameState.totalGameDurationMinutes + deltaMinutes);
+      const disp = document.getElementById('gameDurationValDisplay');
+      if (disp) disp.innerText = `${gameState.totalGameDurationMinutes} min`;
+      showToast(`Czas gry: ${gameState.totalGameDurationMinutes} min`);
     }
 
     function selectPresetTime(sec) {
@@ -901,7 +959,8 @@
         activeBtn.className = 'time-opt-btn active-preset p-3 rounded-xl border text-center transition font-semibold text-sm flex flex-col items-center gap-1 border-amber-500 bg-amber-500/20 text-amber-500';
       }
 
-      document.getElementById('customTimeTile').className = 'p-3.5 rounded-xl border transition inactive-tile border-slate-700/60 bg-slate-800/40 flex items-center justify-between gap-3';
+      const customTile = document.getElementById('customTimeTile');
+      if (customTile) customTile.className = 'p-3.5 rounded-xl border transition inactive-tile border-slate-700/60 bg-slate-800/40 flex items-center justify-between gap-3';
       
       const chessTile = document.getElementById('chessTimeTile');
       if (gameState.players.length === 2 && chessTile) {
@@ -921,7 +980,8 @@
         btn.className = 'time-opt-btn p-3 rounded-xl border text-center transition font-semibold text-sm flex flex-col items-center gap-1 border-slate-700/60 bg-slate-800/40 hover:bg-slate-700/50';
       });
 
-      document.getElementById('customTimeTile').className = 'p-3.5 rounded-xl border transition active-tile border-amber-500 bg-amber-500/20 text-amber-400 flex items-center justify-between gap-3';
+      const customTile = document.getElementById('customTimeTile');
+      if (customTile) customTile.className = 'p-3.5 rounded-xl border transition active-tile border-amber-500 bg-amber-500/20 text-amber-400 flex items-center justify-between gap-3';
       
       const chessTile = document.getElementById('chessTimeTile');
       if (chessTile) {
@@ -936,7 +996,8 @@
 
     function adjustCustomTime(delta) {
       gameState.customTime = Math.max(10, gameState.customTime + delta);
-      document.getElementById('customTimeValDisplay').innerText = `${gameState.customTime}s`;
+      const disp = document.getElementById('customTimeValDisplay');
+      if (disp) disp.innerText = `${gameState.customTime}s`;
       selectCustomTime(true);
     }
 
@@ -954,8 +1015,11 @@
         btn.className = 'time-opt-btn p-3 rounded-xl border text-center transition font-semibold text-sm flex flex-col items-center gap-1 border-slate-700/60 bg-slate-800/40 hover:bg-slate-700/50';
       });
 
-      document.getElementById('customTimeTile').className = 'p-3.5 rounded-xl border transition inactive-tile border-slate-700/60 bg-slate-800/40 flex items-center justify-between gap-3';
-      document.getElementById('chessTimeTile').className = 'p-3.5 rounded-xl border transition active-tile border-purple-500 bg-purple-500/20 text-purple-400 flex items-center justify-between gap-3';
+      const customTile = document.getElementById('customTimeTile');
+      if (customTile) customTile.className = 'p-3.5 rounded-xl border transition inactive-tile border-slate-700/60 bg-slate-800/40 flex items-center justify-between gap-3';
+      
+      const chessTile = document.getElementById('chessTimeTile');
+      if (chessTile) chessTile.className = 'p-3.5 rounded-xl border transition active-tile border-purple-500 bg-purple-500/20 text-purple-400 flex items-center justify-between gap-3';
 
       const mins = Math.floor(gameState.chessTime / 60);
       const secs = gameState.chessTime % 60;
@@ -971,7 +1035,8 @@
       const mins = Math.floor(gameState.chessTime / 60);
       const secs = gameState.chessTime % 60;
       const formatted = `${mins}:${secs < 10 ? '0' : ''}${secs}`;
-      document.getElementById('chessTimeValDisplay').innerText = formatted;
+      const disp = document.getElementById('chessTimeValDisplay');
+      if (disp) disp.innerText = formatted;
       
       gameState.players.forEach(p => p.chessBank = gameState.chessTime);
       selectChessTime();
@@ -1038,18 +1103,22 @@
       }
 
       gameState.players.forEach((p, idx) => {
-        if (!p.name.trim()) p.name = `Gracz ${idx + 1}`;
+        if (!p.name || !p.name.trim()) p.name = `Gracz ${idx + 1}`;
         p.chessBank = gameState.chessTime;
         p.turnsPlayed = 0;
         p.totalThinkingTime = 0;
       });
 
+      const now = Date.now();
       gameState.isChessMode = isChessMode;
       gameState.activePlayerIndex = 0;
       gameState.remainingTime = gameState.turnDuration;
+      gameState.remainingGameSeconds = gameState.totalGameDurationMinutes * 60;
+      gameState.accumulatedMatchMs = 0;
+      gameState.matchStartTimestamp = now;
+      gameState.turnStartTimestamp = now;
       gameState.roundNumber = 1;
       gameState.totalTurnsCount = 1;
-      gameState.turnStartTime = Date.now();
 
       document.getElementById('setupView').classList.add('hidden');
 
@@ -1068,94 +1137,49 @@
       showToast('Gra rozpoczęta!');
     }
 
-    function finishGameSession() {
-      pauseTurnTimer();
-      recordCurrentTurnStats();
-      playSound('fanfare');
-      
-      const summaryList = document.getElementById('summaryContentList');
-      summaryList.innerHTML = '';
+    function updatePauseButtonUI() {
+      const pauseIcon = document.getElementById('pauseIcon');
+      const pauseText = document.getElementById('pauseText');
+      const chessPauseIcon = document.getElementById('chessPauseIcon');
+      const chessPauseText = document.getElementById('chessPauseText');
 
-      const sortedPlayers = [...gameState.players].sort((a, b) => a.totalThinkingTime - b.totalThinkingTime);
-
-      sortedPlayers.forEach((p, idx) => {
-        const avgTime = p.turnsPlayed > 0 ? Math.round(p.totalThinkingTime / p.turnsPlayed) : 0;
-        const totalMinutes = Math.floor(p.totalThinkingTime / 60);
-        const totalSeconds = p.totalThinkingTime % 60;
-        const formattedTotalTime = `${totalMinutes}:${totalSeconds < 10 ? '0' : ''}${totalSeconds}`;
-
-        const item = document.createElement('div');
-        item.className = 'bg-slate-800/30 border border-slate-700/50 rounded-2xl p-4 flex items-center justify-between';
-        item.innerHTML = `
-          <div class="flex items-center gap-3">
-            <div class="w-10 h-10 rounded-xl flex items-center justify-center font-black text-white shadow-md" style="background-color: ${p.colorHex}">
-              ${idx + 1}
-            </div>
-            <div>
-              <h4 class="modal-text font-extrabold text-white text-base">${p.name}</h4>
-              <p class="text-xs text-slate-400">Łączny czas gry: <span class="modal-text font-bold font-mono text-slate-200">${formattedTotalTime}</span></p>
-            </div>
-          </div>
-          <div class="text-right">
-            <span class="text-xs font-bold text-amber-500 block">Śr. czas tury</span>
-            <span class="modal-text text-sm font-extrabold text-white font-mono">${avgTime}s</span>
-          </div>
-        `;
-        summaryList.appendChild(item);
-      });
-
-      const summaryModal = document.getElementById('summaryModal');
-      summaryModal.classList.remove('hidden');
-
-      try {
-        if (typeof confetti === 'function') {
-          confetti({
-            particleCount: 100,
-            spread: 70,
-            origin: { y: 0.6 }
-          });
-        }
-      } catch (e) {
-        console.warn('Confetti error:', e);
+      if (gameState.isTimerRunning) {
+        if (pauseIcon) pauseIcon.className = 'fa-solid fa-pause text-amber-400';
+        if (pauseText) pauseText.innerText = 'Pauza';
+        if (chessPauseIcon) chessPauseIcon.className = 'fa-solid fa-pause text-amber-400';
+        if (chessPauseText) chessPauseText.innerText = 'Pauza';
+      } else {
+        if (pauseIcon) pauseIcon.className = 'fa-solid fa-play text-amber-400';
+        if (pauseText) pauseText.innerText = 'Wznowić';
+        if (chessPauseIcon) chessPauseIcon.className = 'fa-solid fa-play text-amber-400';
+        if (chessPauseText) chessPauseText.innerText = 'Wznowić';
       }
-    }
-
-    function closeSummaryModal() {
-      document.getElementById('summaryModal').classList.add('hidden');
-      returnToSetupLobby();
-    }
-
-    function restartGameSameSettings() {
-      document.getElementById('summaryModal').classList.add('hidden');
-      startGame(gameState.isChessMode);
-    }
-
-    function returnToSetupLobby() {
-      pauseTurnTimer();
-      document.getElementById('gameView').classList.add('hidden');
-      document.getElementById('chessGameView').classList.add('hidden');
-      document.getElementById('setupView').classList.remove('hidden');
-    }
-
-    function recordCurrentTurnStats() {
-      const activeP = getActivePlayer();
-      activeP.turnsPlayed++;
-      const elapsed = Math.round((Date.now() - gameState.turnStartTime) / 1000);
-      activeP.totalThinkingTime += elapsed;
     }
 
     function startTurnTimer() {
       clearInterval(gameState.timerInterval);
       gameState.isTimerRunning = true;
-      gameState.turnStartTime = Date.now();
+      const now = Date.now();
+      
+      if (!gameState.turnStartTimestamp) gameState.turnStartTimestamp = now;
+      if (!gameState.matchStartTimestamp) gameState.matchStartTimestamp = now;
+      
       updatePauseButtonUI();
+
+      let lastSignaledSecond = -1;
 
       gameState.timerInterval = setInterval(() => {
         if (!gameState.isTimerRunning) return;
 
+        const currentTime = Date.now();
+        const turnElapsedMs = currentTime - gameState.turnStartTimestamp;
+        const totalMatchElapsedMs = gameState.accumulatedMatchMs + (currentTime - gameState.matchStartTimestamp);
+
         if (gameState.isChessMode) {
           const activeP = getActivePlayer();
-          activeP.chessBank--;
+          const elapsedSecs = Math.floor(turnElapsedMs / 1000);
+          const initialBank = activeP.chessBankInitial || activeP.chessBank;
+          activeP.chessBank = Math.max(0, initialBank - elapsedSecs);
           updateChessModeDisplay();
 
           if (activeP.chessBank <= 0) {
@@ -1164,11 +1188,28 @@
             showToast(`Czas minął dla ${activeP.name}!`);
           }
         } else {
-          gameState.remainingTime--;
+          const turnElapsedSecs = Math.floor(turnElapsedMs / 1000);
+          const matchElapsedSecs = Math.floor(totalMatchElapsedMs / 1000);
+
+          const newTurnRemaining = Math.max(0, gameState.turnDuration - turnElapsedSecs);
+          const newMatchRemaining = Math.max(0, (gameState.totalGameDurationMinutes * 60) - matchElapsedSecs);
+
+          gameState.remainingTime = newTurnRemaining;
+          gameState.remainingGameSeconds = newMatchRemaining;
+
           updateTimerDisplay();
 
-          if (gameState.remainingTime <= 5 && gameState.remainingTime > 0) {
+          if (newTurnRemaining <= 5 && newTurnRemaining > 0 && newTurnRemaining !== lastSignaledSecond) {
+            lastSignaledSecond = newTurnRemaining;
             playSound('warning');
+          }
+
+          if (gameState.remainingGameSeconds <= 0) {
+            clearInterval(gameState.timerInterval);
+            playSound('timeout');
+            showToast('Koniec czasu gry! Mecz został zakończony.');
+            finishGameSession();
+            return;
           }
 
           if (gameState.remainingTime <= 0) {
@@ -1178,37 +1219,47 @@
             nextTurn();
           }
         }
-      }, 1000);
+      }, 100);
     }
 
     function pauseTurnTimer() {
-      gameState.isTimerRunning = false;
-      updatePauseButtonUI();
+      if (gameState.isTimerRunning) {
+        gameState.isTimerRunning = false;
+        const now = Date.now();
+        gameState.accumulatedMatchMs += (now - gameState.matchStartTimestamp);
+        gameState.pauseTimestamp = now;
+        updatePauseButtonUI();
+      }
     }
 
     function togglePause() {
-      gameState.isTimerRunning = !gameState.isTimerRunning;
+      const now = Date.now();
+      if (gameState.isTimerRunning) {
+        gameState.isTimerRunning = false;
+        gameState.accumulatedMatchMs += (now - gameState.matchStartTimestamp);
+        gameState.pauseTimestamp = now;
+        showToast('Timer wstrzymany');
+      } else {
+        gameState.isTimerRunning = true;
+        const pauseDuration = gameState.pauseTimestamp ? (now - gameState.pauseTimestamp) : 0;
+        gameState.matchStartTimestamp = now;
+        gameState.turnStartTimestamp += pauseDuration;
+        gameState.pauseTimestamp = 0;
+        showToast('Timer wznowiony');
+      }
       updatePauseButtonUI();
-      showToast(gameState.isTimerRunning ? 'Timer wznowiony' : 'Timer wstrzymany');
     }
 
-    function updatePauseButtonUI() {
-      const icon = document.getElementById('pauseIcon');
-      const text = document.getElementById('pauseText');
-      const chessIcon = document.getElementById('chessPauseIcon');
-      const chessText = document.getElementById('chessPauseText');
+    function recordCurrentTurnStats() {
+      const activeP = getActivePlayer();
+      if (!activeP) return;
 
-      const iconClass = gameState.isTimerRunning ? 'fa-solid fa-pause text-amber-400' : 'fa-solid fa-play text-emerald-400';
-      const label = gameState.isTimerRunning ? 'Pauza' : 'Wznów';
+      const now = Date.now();
+      const elapsedMs = now - (gameState.turnStartTimestamp || now);
+      const elapsedSecs = Math.max(1, Math.round(elapsedMs / 1000));
 
-      if (icon && text) {
-        icon.className = iconClass;
-        text.innerText = label;
-      }
-      if (chessIcon && chessText) {
-        chessIcon.className = iconClass;
-        chessText.innerText = label;
-      }
+      activeP.turnsPlayed = (activeP.turnsPlayed || 0) + 1;
+      activeP.totalThinkingTime = (activeP.totalThinkingTime || 0) + elapsedSecs;
     }
 
     function nextTurn() {
@@ -1219,11 +1270,24 @@
         timerContainer.style.transform = 'scale(1)';
       }
 
+      const now = Date.now();
+      if (gameState.isTimerRunning && gameState.matchStartTimestamp) {
+        gameState.accumulatedMatchMs += (now - gameState.matchStartTimestamp);
+        gameState.matchStartTimestamp = now;
+      }
+
       gameState.activePlayerIndex = (gameState.activePlayerIndex + 1) % gameState.players.length;
       if (gameState.activePlayerIndex === 0) {
         gameState.roundNumber++;
       }
       gameState.totalTurnsCount++;
+
+      const activeP = getActivePlayer();
+      if (gameState.isChessMode) {
+        activeP.chessBankInitial = activeP.chessBank;
+      }
+
+      gameState.turnStartTimestamp = now;
       gameState.remainingTime = gameState.turnDuration;
 
       if (gameState.isChessMode) {
@@ -1245,22 +1309,22 @@
       const card = document.getElementById('activePlayerCard');
       const rotBox = document.getElementById('rotatingTimerBox');
       const nameEl = document.getElementById('activePlayerName');
-      const posBadge = document.getElementById('activePlayerPosBadge');
       const turnBadge = document.getElementById('turnCounterBadge');
       const nextTurnBtn = document.getElementById('nextTurnBtn');
       const nextUpText = document.getElementById('nextUpText');
 
-      nameEl.innerText = activePlayer.name;
-      posBadge.innerText = `Pozycja: ${activePlayer.rotation}°`;
-      turnBadge.innerText = `Runda ${gameState.roundNumber} • Tura #${gameState.totalTurnsCount}`;
+      if (nameEl) nameEl.innerText = activePlayer.name;
+      if (turnBadge) turnBadge.innerText = `Runda ${gameState.roundNumber} • Tura #${gameState.totalTurnsCount}`;
 
       const nextPlayer = gameState.players[(gameState.activePlayerIndex + 1) % gameState.players.length];
-      nextUpText.innerText = `Kolejny gracz: ${nextPlayer.name}`;
+      if (nextUpText) nextUpText.innerText = `Kolejny gracz: ${nextPlayer.name}`;
 
-      card.className = "glass-panel rounded-3xl p-5 sm:p-8 text-center relative overflow-hidden player-card-glow border-2 transition-all duration-300";
-      card.style.borderColor = activePlayer.colorHex;
-      card.style.backgroundColor = `${activePlayer.colorHex}18`;
-      card.style.boxShadow = `0 0 35px 2px ${activePlayer.colorHex}44`;
+      if (card) {
+        card.className = "glass-panel rounded-3xl p-5 sm:p-8 text-center relative overflow-hidden player-card-glow border-2 transition-all duration-300";
+        card.style.borderColor = activePlayer.colorHex;
+        card.style.backgroundColor = `${activePlayer.colorHex}18`;
+        card.style.boxShadow = `0 0 35px 2px ${activePlayer.colorHex}44`;
+      }
 
       if (rotBox) {
         rotBox.style.transform = `rotate(${activePlayer.rotation || 0}deg)`;
@@ -1281,19 +1345,29 @@
       const circle = document.getElementById('timerProgressCircle');
       const activePlayer = getActivePlayer();
 
-      timeDisplay.innerText = gameState.remainingTime;
+      if (timeDisplay) timeDisplay.innerText = gameState.remainingTime;
 
-      const maxOffset = 263.89;
-      const progress = Math.max(0, gameState.remainingTime) / gameState.turnDuration;
-      const offset = maxOffset - (progress * maxOffset);
-      circle.style.strokeDashoffset = offset;
+      const matchText = document.getElementById('matchDurationText');
+      if (matchText) {
+        const totalSecs = gameState.remainingGameSeconds;
+        const mins = Math.floor(totalSecs / 60);
+        const secs = totalSecs % 60;
+        matchText.innerText = `Mecz: ${mins}:${secs < 10 ? '0' : ''}${secs}`;
+      }
 
-      if (gameState.remainingTime <= 10) {
-        circle.style.stroke = '#ef4444';
-        timeDisplay.className = 'text-5xl sm:text-6xl font-black font-mono tracking-tighter text-red-500 animate-pulse';
-      } else {
-        circle.style.stroke = activePlayer.colorHex;
-        timeDisplay.className = 'text-5xl sm:text-6xl font-black font-mono tracking-tighter section-title';
+      if (circle) {
+        const maxOffset = 263.89;
+        const progress = Math.max(0, gameState.remainingTime) / gameState.turnDuration;
+        const offset = maxOffset - (progress * maxOffset);
+        circle.style.strokeDashoffset = offset;
+
+        if (gameState.remainingTime <= 5) {
+          circle.style.stroke = '#ef4444';
+          if (timeDisplay) timeDisplay.className = 'text-5xl sm:text-6xl font-black font-mono tracking-tighter text-red-500 animate-pulse';
+        } else {
+          circle.style.stroke = activePlayer.colorHex;
+          if (timeDisplay) timeDisplay.className = 'text-5xl sm:text-6xl font-black font-mono tracking-tighter section-title';
+        }
       }
     }
 
@@ -1301,8 +1375,11 @@
       const p1 = gameState.players[0];
       const p2 = gameState.players[1];
 
-      document.getElementById('chessP1Name').innerText = p1.name;
-      document.getElementById('chessP2Name').innerText = p2.name;
+      const p1Name = document.getElementById('chessP1Name');
+      const p2Name = document.getElementById('chessP2Name');
+
+      if (p1Name) p1Name.innerText = p1.name;
+      if (p2Name) p2Name.innerText = p2.name;
 
       updateChessModeDisplay();
     }
@@ -1315,17 +1392,21 @@
       const p1Card = document.getElementById('chessP1Card');
       const p2Card = document.getElementById('chessP2Card');
 
-      p1Card.style.borderColor = p1.colorHex;
-      p1Card.style.backgroundColor = activeIdx === 0 ? `${p1.colorHex}45` : 'rgba(148, 163, 184, 0.1)';
-      p1Card.style.boxShadow = activeIdx === 0 ? `0 0 30px 5px ${p1.colorHex}66` : 'none';
-      document.getElementById('chessP1Status').innerText = activeIdx === 0 ? 'Twój ruch (Kliknij)' : 'Czeka na ruch';
-      document.getElementById('chessP1Time').innerText = formatChessTime(p1.chessBank);
+      if (p1Card) {
+        p1Card.style.borderColor = p1.colorHex;
+        p1Card.style.backgroundColor = activeIdx === 0 ? `${p1.colorHex}45` : 'rgba(148, 163, 184, 0.1)';
+        p1Card.style.boxShadow = activeIdx === 0 ? `0 0 30px 5px ${p1.colorHex}66` : 'none';
+        document.getElementById('chessP1Status').innerText = activeIdx === 0 ? 'Twój ruch (Kliknij)' : 'Czeka na ruch';
+        document.getElementById('chessP1Time').innerText = formatChessTime(p1.chessBank);
+      }
 
-      p2Card.style.borderColor = p2.colorHex;
-      p2Card.style.backgroundColor = activeIdx === 1 ? `${p2.colorHex}45` : 'rgba(148, 163, 184, 0.1)';
-      p2Card.style.boxShadow = activeIdx === 1 ? `0 0 30px 5px ${p2.colorHex}66` : 'none';
-      document.getElementById('chessP2Status').innerText = activeIdx === 1 ? 'Twój ruch (Kliknij)' : 'Czeka na ruch';
-      document.getElementById('chessP2Time').innerText = formatChessTime(p2.chessBank);
+      if (p2Card) {
+        p2Card.style.borderColor = p2.colorHex;
+        p2Card.style.backgroundColor = activeIdx === 1 ? `${p2.colorHex}45` : 'rgba(148, 163, 184, 0.1)';
+        p2Card.style.boxShadow = activeIdx === 1 ? `0 0 30px 5px ${p2.colorHex}66` : 'none';
+        document.getElementById('chessP2Status').innerText = activeIdx === 1 ? 'Twój ruch (Kliknij)' : 'Czeka na ruch';
+        document.getElementById('chessP2Time').innerText = formatChessTime(p2.chessBank);
+      }
     }
 
     function handleChessCardClick(clickedIndex) {
@@ -1340,11 +1421,78 @@
       return `${m}:${s < 10 ? '0' : ''}${s}`;
     }
 
+    function finishGameSession() {
+      pauseTurnTimer();
+      recordCurrentTurnStats();
+
+      const summaryList = document.getElementById('summaryContentList');
+      if (summaryList) {
+        summaryList.innerHTML = '';
+
+        gameState.players.forEach((p, idx) => {
+          const turns = p.turnsPlayed || 0;
+          const totalTime = p.totalThinkingTime || 0;
+          const avgTime = turns > 0 ? Math.round(totalTime / turns) : 0;
+
+          const item = document.createElement('div');
+          item.className = 'p-3.5 rounded-2xl bg-slate-800/60 border border-slate-700/60 flex items-center justify-between gap-3';
+          item.style.borderLeft = `4px solid ${p.colorHex}`;
+
+          item.innerHTML = `
+            <div class="flex items-center gap-3">
+              <div class="w-8 h-8 rounded-xl flex items-center justify-center font-black text-xs text-slate-950" style="background-color: ${p.colorHex}">
+                ${idx + 1}
+              </div>
+              <div>
+                <h4 class="font-bold text-sm text-white">${p.name}</h4>
+                <p class="text-xs text-slate-400">Wykonane tury: <span class="text-amber-400 font-semibold">${turns}</span></p>
+              </div>
+            </div>
+            <div class="text-right">
+              <div class="text-xs text-slate-300 font-medium">Łączny czas: <span class="font-bold text-white">${formatChessTime(totalTime)}</span></div>
+              <div class="text-xs text-slate-400">Średnio / turę: <span class="font-semibold text-amber-400">${avgTime}s</span></div>
+            </div>
+          `;
+          summaryList.appendChild(item);
+        });
+      }
+
+      playSound('fanfare');
+
+      if (typeof confetti === 'function') {
+        confetti({
+          particleCount: 80,
+          spread: 70,
+          origin: { y: 0.6 }
+        });
+      }
+
+      const modal = document.getElementById('summaryModal');
+      if (modal) modal.classList.remove('hidden');
+    }
+
+    function closeSummaryModal() {
+      const modal = document.getElementById('summaryModal');
+      if (modal) modal.classList.add('hidden');
+
+      document.getElementById('gameView').classList.add('hidden');
+      document.getElementById('chessGameView').classList.add('hidden');
+      document.getElementById('setupView').classList.remove('hidden');
+    }
+
+    function restartGameSameSettings() {
+      const modal = document.getElementById('summaryModal');
+      if (modal) modal.classList.add('hidden');
+
+      startGame(gameState.isChessMode);
+    }
+
     function showToast(message) {
       const toast = document.getElementById('toast');
       const toastMsg = document.getElementById('toastMsg');
-      toastMsg.innerText = message;
+      if (!toast || !toastMsg) return;
 
+      toastMsg.innerText = message;
       toast.classList.remove('translate-y-20', 'opacity-0');
       toast.classList.add('translate-y-0', 'opacity-100');
 
