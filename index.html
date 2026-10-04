@@ -685,7 +685,7 @@
   </div>
 
   <footer class="footer-bar w-full text-center py-3 text-xs border-t transition-colors duration-300">
-    Created by ToMi with AI · wersja 1.2.8
+    Created by ToMi with AI · wersja 1.2.9
   </footer>
 
   <script>
@@ -812,20 +812,17 @@
     }
 
     function openAdvancedPlayersModal() {
-      // Klonujemy aktualny stan pozycji do bufora tymczasowego
       tempAdvancedPlayers = JSON.parse(JSON.stringify(gameState.players));
       renderAdvancedPlayersModalContent();
       document.getElementById('advancedPlayersModal').classList.remove('hidden');
     }
 
     function closeAdvancedPlayersModal() {
-      // Zamknięcie za pomocą X - odrzucamy zmiany (nic nie kopiujemy z tempAdvancedPlayers)
       document.getElementById('advancedPlayersModal').classList.add('hidden');
       renderSetupPlayerList();
     }
 
     function saveAndCloseAdvancedPlayersModal() {
-      // Zatwierdzenie zmian - przypisujemy tablicę tymczasową do głównego stanu graczy
       gameState.players = JSON.parse(JSON.stringify(tempAdvancedPlayers));
       document.getElementById('advancedPlayersModal').classList.add('hidden');
       renderSetupPlayerList();
@@ -970,11 +967,11 @@
           colorPalette.appendChild(colorBtn);
         });
 
-        // Wskaźnik kąta (bez przycisku z kołem zębatym)
+        // Wskaźnik kąta (bez koła zębatego)
         const rotationBadge = document.createElement('button');
         rotationBadge.type = 'button';
         rotationBadge.className = 'theme-btn-bg px-2.5 py-1.5 rounded-lg bg-slate-800/80 border border-slate-700 text-xs font-bold text-amber-400 hover:bg-slate-700 transition flex-shrink-0 flex items-center justify-center gap-1 h-[38px] w-[70px] cursor-pointer';
-        rotationBadge.innerHTML = `<i class="fa-solid fa-compass text-[10px]"></i> ${player.rotation}°`;
+        rotationBadge.innerHTML = `${player.rotation}°`;
         rotationBadge.title = "Kąt pozycji (kliknij, aby otworzyć zaawansowane ustawienia)";
         rotationBadge.onclick = () => openAdvancedPlayersModal();
 
