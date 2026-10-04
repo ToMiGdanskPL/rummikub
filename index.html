@@ -403,13 +403,8 @@
           </div>
         </div>
 
-        <div class="flex items-center gap-2">
-          <!-- Toggle Button to Disable/Enable Game Duration -->
-          <button id="toggleUnlimitedGameBtn" onclick="toggleUnlimitedGameDuration()" class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 font-semibold text-xs flex items-center gap-1.5 transition">
-            <i id="unlimitedToggleIcon" class="fa-solid fa-infinity text-amber-400"></i>
-            <span id="unlimitedToggleText">Wyłącz czas gry</span>
-          </button>
-
+        <div class="flex items-center gap-1.5">
+          <!-- Controls Box (+ / -) -->
           <div id="gameDurationControls" class="tile-controls-box flex items-center gap-1 bg-slate-900/60 p-1 rounded-xl border border-slate-700/60 flex-shrink-0">
             <button onclick="adjustGameDuration(-1)" class="tile-ctrl-btn w-8 h-8 rounded-lg bg-slate-800 hover:bg-slate-700 text-white font-bold text-base transition active:scale-90 flex items-center justify-center" title="-1 minuta">
               -
@@ -418,6 +413,11 @@
               +
             </button>
           </div>
+
+          <!-- Icon Only Toggle Button (Infinity / Clock) placed to the right of +- -->
+          <button id="toggleUnlimitedGameBtn" onclick="toggleUnlimitedGameDuration()" class="w-10 h-10 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 font-semibold flex items-center justify-center transition active:scale-95 flex-shrink-0" title="Wyłącz / Włącz limit czasu gry">
+            <i id="unlimitedToggleIcon" class="fa-solid fa-infinity text-amber-400 text-lg"></i>
+          </button>
         </div>
       </div>
     </div>
@@ -659,7 +659,7 @@
   </div>
 
   <footer class="footer-bar w-full text-center py-3 text-xs border-t transition-colors duration-300">
-    Created by ToMi with AI · wersja 1.0.9
+    Created by ToMi with AI · wersja 1.1.0
   </footer>
 
   <script>
@@ -951,7 +951,6 @@
       const sub = document.getElementById('gameDurationSubtext');
       const controls = document.getElementById('gameDurationControls');
       const toggleBtn = document.getElementById('toggleUnlimitedGameBtn');
-      const toggleText = document.getElementById('unlimitedToggleText');
       const toggleIcon = document.getElementById('unlimitedToggleIcon');
 
       if (gameState.isUnlimitedGameDuration) {
@@ -959,20 +958,18 @@
         if (sub) sub.innerText = 'Gra bez ograniczenia czasowego';
         if (controls) controls.classList.add('hidden');
         if (toggleBtn) {
-          toggleBtn.className = 'px-3 py-1.5 rounded-xl bg-amber-500/20 text-amber-400 border border-amber-500/40 font-bold text-xs flex items-center gap-1.5 transition';
+          toggleBtn.className = 'w-10 h-10 rounded-xl bg-amber-500/20 text-amber-400 border border-amber-500/40 font-bold flex items-center justify-center transition active:scale-95 flex-shrink-0';
         }
-        if (toggleText) toggleText.innerText = 'Czas wyłączony';
-        if (toggleIcon) toggleIcon.className = 'fa-solid fa-circle-check text-amber-400';
+        if (toggleIcon) toggleIcon.className = 'fa-solid fa-clock text-amber-400 text-lg';
         showToast('Wyłączono czas gry');
       } else {
         if (disp) disp.innerText = `${gameState.totalGameDurationMinutes} min`;
         if (sub) sub.innerText = 'Regulacja ±1 min';
         if (controls) controls.classList.remove('hidden');
         if (toggleBtn) {
-          toggleBtn.className = 'px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 font-semibold text-xs flex items-center gap-1.5 transition';
+          toggleBtn.className = 'w-10 h-10 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 font-semibold flex items-center justify-center transition active:scale-95 flex-shrink-0';
         }
-        if (toggleText) toggleText.innerText = 'Wyłącz czas gry';
-        if (toggleIcon) toggleIcon.className = 'fa-solid fa-infinity text-amber-400';
+        if (toggleIcon) toggleIcon.className = 'fa-solid fa-infinity text-amber-400 text-lg';
         showToast(`Czas gry: ${gameState.totalGameDurationMinutes} min`);
       }
     }
@@ -1577,29 +1574,10 @@
       }, 2500);
     }
 
-    window.onload = function() {
-      selectCustomTime(false);
+    // Initialize application UI on DOMContentLoaded
+    document.addEventListener('DOMContentLoaded', () => {
       renderSetupPlayerList();
-
-      const timerContainer = document.getElementById('timerCircleContainer');
-      if (timerContainer) {
-        timerContainer.addEventListener('mousedown', () => {
-          timerContainer.style.transform = 'scale(1.05)';
-        });
-        timerContainer.addEventListener('mouseup', () => {
-          timerContainer.style.transform = 'scale(1)';
-        });
-        timerContainer.addEventListener('mouseleave', () => {
-          timerContainer.style.transform = 'scale(1)';
-        });
-        timerContainer.addEventListener('touchstart', () => {
-          timerContainer.style.transform = 'scale(1.05)';
-        });
-        timerContainer.addEventListener('touchend', () => {
-          timerContainer.style.transform = 'scale(1)';
-        });
-      }
-    };
+    });
   </script>
 </body>
 </html>
