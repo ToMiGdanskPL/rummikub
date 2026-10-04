@@ -389,27 +389,35 @@
 
     <!-- Overall Game Duration Box (Hidden when Chess Mode is active) -->
     <div id="gameDurationBox" class="glass-panel rounded-2xl p-4 sm:p-6 space-y-3">
-      <div class="flex items-center justify-between gap-3">
+      <div class="flex flex-wrap items-center justify-between gap-3">
         <div class="flex items-center gap-3">
           <div class="w-10 h-10 rounded-lg bg-amber-500/20 text-amber-400 border border-amber-500/30 flex items-center justify-center font-bold text-lg flex-shrink-0">
             <i class="fa-solid fa-hourglass-half"></i>
           </div>
           <div>
             <div class="text-sm font-bold time-val-text flex items-center gap-2">
-              <span class="tile-title-text">Całkowity czas:</span>
+              <span class="tile-title-text">Całkowity czas gry:</span>
               <span id="gameDurationValDisplay" class="text-amber-500 text-base font-extrabold">25 min</span>
             </div>
-            <p class="tile-sub-text text-xs text-slate-400">Regulacja ±1 min</p>
+            <p id="gameDurationSubtext" class="tile-sub-text text-xs text-slate-400">Regulacja ±1 min</p>
           </div>
         </div>
 
-        <div class="tile-controls-box flex items-center gap-1 bg-slate-900/60 p-1 rounded-xl border border-slate-700/60 flex-shrink-0">
-          <button onclick="adjustGameDuration(-1)" class="tile-ctrl-btn w-8 h-8 rounded-lg bg-slate-800 hover:bg-slate-700 text-white font-bold text-base transition active:scale-90 flex items-center justify-center" title="-1 minuta">
-            -
+        <div class="flex items-center gap-2">
+          <!-- Toggle Button to Disable/Enable Game Duration -->
+          <button id="toggleUnlimitedGameBtn" onclick="toggleUnlimitedGameDuration()" class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 font-semibold text-xs flex items-center gap-1.5 transition">
+            <i id="unlimitedToggleIcon" class="fa-solid fa-infinity text-amber-400"></i>
+            <span id="unlimitedToggleText">Wyłącz czas gry</span>
           </button>
-          <button onclick="adjustGameDuration(1)" class="tile-ctrl-btn w-8 h-8 rounded-lg bg-slate-800 hover:bg-slate-700 text-white font-bold text-base transition active:scale-90 flex items-center justify-center" title="+1 minuta">
-            +
-          </button>
+
+          <div id="gameDurationControls" class="tile-controls-box flex items-center gap-1 bg-slate-900/60 p-1 rounded-xl border border-slate-700/60 flex-shrink-0">
+            <button onclick="adjustGameDuration(-1)" class="tile-ctrl-btn w-8 h-8 rounded-lg bg-slate-800 hover:bg-slate-700 text-white font-bold text-base transition active:scale-90 flex items-center justify-center" title="-1 minuta">
+              -
+            </button>
+            <button onclick="adjustGameDuration(1)" class="tile-ctrl-btn w-8 h-8 rounded-lg bg-slate-800 hover:bg-slate-700 text-white font-bold text-base transition active:scale-90 flex items-center justify-center" title="+1 minuta">
+              +
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -579,7 +587,7 @@
             <i class="fa-solid fa-hourglass-half text-xs"></i> 2. Całkowity czas gry
           </h4>
           <p class="text-xs text-slate-400 leading-relaxed">
-            Ustaw limit czasu całej gry (domyślnie 25 minut, regulowany z krokiem 1 minuty). Odliczanie czasu odbywa się podczas każdej tury.
+            Ustaw limit czasu całej gry (domyślnie 25 minut, regulowany z krokiem 1 minuty) lub wyłącz limit przyciskiem **Bez limitu**.
           </p>
         </div>
 
@@ -672,6 +680,7 @@
       customTime: 40,
       chessTime: 300,
       totalGameDurationMinutes: 25,
+      isUnlimitedGameDuration: false,
       remainingGameSeconds: 25 * 60,
       accumulatedMatchMs: 0,
       matchStartTimestamp: 0,
@@ -936,7 +945,40 @@
       }
     }
 
+    function toggleUnlimitedGameDuration() {
+      gameState.isUnlimitedGameDuration = !gameState.isUnlimitedGameDuration;
+      const disp = document.getElementById('gameDurationValDisplay');
+      const sub = document.getElementById('gameDurationSubtext');
+      const controls = document.getElementById('gameDurationControls');
+      const toggleBtn = document.getElementById('toggleUnlimitedGameBtn');
+      const toggleText = document.getElementById('unlimitedToggleText');
+      const toggleIcon = document.getElementById('unlimitedToggleIcon');
+
+      if (gameState.isUnlimitedGameDuration) {
+        if (disp) disp.innerText = 'Bez limitu';
+        if (sub) sub.innerText = 'Gra bez ograniczenia czasowego';
+        if (controls) controls.classList.add('hidden');
+        if (toggleBtn) {
+          toggleBtn.className = 'px-3 py-1.5 rounded-xl bg-amber-500/20 text-amber-400 border border-amber-500/40 font-bold text-xs flex items-center gap-1.5 transition';
+        }
+        if (toggleText) toggleText.innerText = 'Czas wyłączony';
+        if (toggleIcon) toggleIcon.className = 'fa-solid fa-circle-check text-amber-400';
+        showToast('Wyłączono czas gry');
+      } else {
+        if (disp) disp.innerText = `${gameState.totalGameDurationMinutes} min`;
+        if (sub) sub.innerText = 'Regulacja ±1 min';
+        if (controls) controls.classList.remove('hidden');
+        if (toggleBtn) {
+          toggleBtn.className = 'px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 font-semibold text-xs flex items-center gap-1.5 transition';
+        }
+        if (toggleText) toggleText.innerText = 'Wyłącz czas gry';
+        if (toggleIcon) toggleIcon.className = 'fa-solid fa-infinity text-amber-400';
+        showToast(`Czas gry: ${gameState.totalGameDurationMinutes} min`);
+      }
+    }
+
     function adjustGameDuration(deltaMinutes) {
+      if (gameState.isUnlimitedGameDuration) return;
       gameState.totalGameDurationMinutes = Math.max(1, gameState.totalGameDurationMinutes + deltaMinutes);
       const disp = document.getElementById('gameDurationValDisplay');
       if (disp) disp.innerText = `${gameState.totalGameDurationMinutes} min`;
@@ -1229,7 +1271,7 @@
             playSound('warning');
           }
 
-          if (gameState.remainingGameSeconds <= 0) {
+          if (!gameState.isUnlimitedGameDuration && gameState.remainingGameSeconds <= 0) {
             clearInterval(gameState.timerInterval);
             playSound('timeout');
             showToast('Koniec czasu gry! Mecz został zakończony.');
@@ -1378,10 +1420,14 @@
 
       const matchText = document.getElementById('matchDurationText');
       if (matchText) {
-        const totalSecs = gameState.remainingGameSeconds;
-        const mins = Math.floor(totalSecs / 60);
-        const secs = totalSecs % 60;
-        matchText.innerText = `Mecz: ${mins}:${secs < 10 ? '0' : ''}${secs}`;
+        if (gameState.isUnlimitedGameDuration) {
+          matchText.innerText = 'Mecz: Bez limitu';
+        } else {
+          const totalSecs = gameState.remainingGameSeconds;
+          const mins = Math.floor(totalSecs / 60);
+          const secs = totalSecs % 60;
+          matchText.innerText = `Mecz: ${mins}:${secs < 10 ? '0' : ''}${secs}`;
+        }
       }
 
       if (circle) {
