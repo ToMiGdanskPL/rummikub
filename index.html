@@ -651,7 +651,7 @@
   </div>
 
   <footer class="footer-bar w-full text-center py-3 text-xs border-t transition-colors duration-300">
-    Created by ToMi with AI · wersja 1.0.7
+    Created by ToMi with AI · wersja 1.0.8
   </footer>
 
   <script>
@@ -680,8 +680,8 @@
       soundEnabled: true,
       theme: 'dark',
       players: [
-        { id: 1, name: 'Gracz 1', colorHex: '#ef4444', rotation: 0, chessBank: 600, turnsPlayed: 0, totalThinkingTime: 0 },
-        { id: 2, name: 'Gracz 2', colorHex: '#3b82f6', rotation: 180, chessBank: 600, turnsPlayed: 0, totalThinkingTime: 0 }
+        { id: 1, name: '', colorHex: '#ef4444', rotation: 0, chessBank: 600, turnsPlayed: 0, totalThinkingTime: 0 },
+        { id: 2, name: '', colorHex: '#3b82f6', rotation: 180, chessBank: 600, turnsPlayed: 0, totalThinkingTime: 0 }
       ],
       activePlayerIndex: 0,
       roundNumber: 1,
@@ -810,11 +810,11 @@
 
         const nameInput = document.createElement('input');
         nameInput.type = 'text';
-        nameInput.value = player.name;
+        nameInput.value = player.name || '';
         nameInput.placeholder = `Gracz ${index + 1}`;
         nameInput.className = 'input-box flex-1 w-full min-w-0 border rounded-lg px-3 py-1.5 text-sm font-semibold focus:outline-none focus:border-amber-500 h-[38px] transition-colors';
         nameInput.oninput = (e) => {
-          player.name = e.target.value || `Gracz ${index + 1}`;
+          player.name = e.target.value;
         };
 
         const delBtn = document.createElement('button');
@@ -1014,7 +1014,7 @@
       });
 
       const customTile = document.getElementById('customTimeTile');
-      if (customTile) customTile.className = 'p-3.5 rounded-xl border transition inactive-tile border-slate-700/60 bg-slate-800/40 flex items-center justify-between gap-3';
+      if (customTile) customTile.className = 'p-3.5 rounded-xl border transition active-tile border-amber-500 bg-amber-500/20 text-amber-400 flex items-center justify-between gap-3';
       
       const chessTile = document.getElementById('chessTimeTile');
       if (chessTile) chessTile.className = 'p-3.5 rounded-xl border transition active-tile border-purple-500 bg-purple-500/20 text-purple-400 flex items-center justify-between gap-3';
@@ -1058,7 +1058,7 @@
 
           gameState.players.push({
             id: Date.now() + i,
-            name: `Gracz ${i + 1}`,
+            name: '',
             colorHex: available.hex,
             rotation: defaultRotations[i],
             chessBank: gameState.chessTime,
@@ -1099,9 +1099,12 @@
     function movePlayer(index, direction) {
       const newIndex = index + direction;
       if (newIndex < 0 || newIndex >= gameState.players.length) return;
+      
+      // Zmiana kolejności graczy w tablicy (stopnie p.rotation pozostają bez zmian)
       const temp = gameState.players[index];
       gameState.players[index] = gameState.players[newIndex];
       gameState.players[newIndex] = temp;
+      
       renderSetupPlayerList();
     }
 
@@ -1111,7 +1114,11 @@
       }
 
       gameState.players.forEach((p, idx) => {
-        if (!p.name || !p.name.trim()) p.name = `Gracz ${idx + 1}`;
+        if (!p.displayName) {
+          p.displayName = (p.name && p.name.trim()) ? p.name.trim() : `Gracz ${idx + 1}`;
+        } else if (p.name && p.name.trim()) {
+          p.displayName = p.name.trim();
+        }
         p.chessBank = gameState.chessTime;
         p.turnsPlayed = 0;
         p.totalThinkingTime = 0;
@@ -1195,7 +1202,7 @@
             clearInterval(gameState.timerInterval);
             gameState.isTimerRunning = false;
             playSound('timeout');
-            showToast(`Czas minął dla ${activeP.name}!`);
+            showToast(`Czas minął dla ${activeP.displayName}!`);
           }
         } else {
           const turnElapsedMs = currentTime - gameState.turnStartTimestamp;
@@ -1228,7 +1235,7 @@
           if (gameState.remainingTime <= 0) {
             clearInterval(gameState.timerInterval);
             playSound('timeout');
-            showToast(`Czas minął dla ${getActivePlayer().name}!`);
+            showToast(`Czas minął dla ${getActivePlayer().displayName}!`);
             nextTurn();
           }
         }
@@ -1321,11 +1328,11 @@
       const nextTurnBtn = document.getElementById('nextTurnBtn');
       const nextUpText = document.getElementById('nextUpText');
 
-      if (nameEl) nameEl.innerText = activePlayer.name;
+      if (nameEl) nameEl.innerText = activePlayer.displayName;
       if (turnBadge) turnBadge.innerText = `Runda ${gameState.roundNumber} • Tura #${gameState.totalTurnsCount}`;
 
       const nextPlayer = gameState.players[(gameState.activePlayerIndex + 1) % gameState.players.length];
-      if (nextUpText) nextUpText.innerText = `Kolejny gracz: ${nextPlayer.name}`;
+      if (nextUpText) nextUpText.innerText = `Kolejny gracz: ${nextPlayer.displayName}`;
 
       if (card) {
         card.className = "glass-panel rounded-3xl p-5 sm:p-8 text-center relative overflow-hidden player-card-glow border-2 transition-all duration-300";
@@ -1395,8 +1402,8 @@
       const p1Name = document.getElementById('chessP1Name');
       const p2Name = document.getElementById('chessP2Name');
 
-      if (p1Name) p1Name.innerText = p1.name;
-      if (p2Name) p2Name.innerText = p2.name;
+      if (p1Name) p1Name.innerText = p1.displayName;
+      if (p2Name) p2Name.innerText = p2.displayName;
 
       updateChessModeDisplay();
     }
@@ -1461,7 +1468,7 @@
                 ${idx + 1}
               </div>
               <div>
-                <h4 class="font-bold text-sm text-white">${p.name}</h4>
+                <h4 class="font-bold text-sm text-white">${p.displayName}</h4>
                 <p class="text-xs text-slate-400">Wykonane tury: <span class="text-amber-400 font-semibold">${turns}</span></p>
               </div>
             </div>
