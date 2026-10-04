@@ -363,17 +363,19 @@
         <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-700/40 pb-4">
           <div>
             <h3 class="text-sm font-bold uppercase tracking-wider text-slate-400 flex items-center gap-2">
-              <i class="fa-solid fa-users text-amber-400"></i> Uczestnicy (Max 4)
+              <i class="fa-solid fa-users text-amber-400"></i> Uczestnicy (Max 6)
             </h3>
             <p class="text-xs text-slate-400 mt-0.5">Ustaw unikalne imiona, kolory i pozycje przy stole.</p>
           </div>
 
-          <!-- Player Count Buttons (2, 3, 4 Max) -->
-          <div class="count-btn-container flex items-center bg-slate-900/60 p-1 rounded-xl border border-slate-700/60">
+          <!-- Player Count Buttons (2 to 6 Max) -->
+          <div class="count-btn-container flex items-center bg-slate-900/60 p-1 rounded-xl border border-slate-700/60 flex-wrap gap-0.5">
             <span class="count-btn-label text-xs text-slate-300 font-semibold px-2">Ilość:</span>
-            <button onclick="setPlayerCount(2)" class="count-btn active-count px-3 py-1 rounded-lg text-xs font-black transition bg-amber-500 text-slate-950" data-count="2">2</button>
-            <button onclick="setPlayerCount(3)" class="count-btn px-3 py-1 rounded-lg text-xs font-bold transition hover:bg-slate-800 text-slate-200" data-count="3">3</button>
-            <button onclick="setPlayerCount(4)" class="count-btn px-3 py-1 rounded-lg text-xs font-bold transition hover:bg-slate-800 text-slate-200" data-count="4">4</button>
+            <button onclick="setPlayerCount(2)" class="count-btn active-count px-2.5 py-1 rounded-lg text-xs font-black transition bg-amber-500 text-slate-950" data-count="2">2</button>
+            <button onclick="setPlayerCount(3)" class="count-btn px-2.5 py-1 rounded-lg text-xs font-bold transition hover:bg-slate-800 text-slate-200" data-count="3">3</button>
+            <button onclick="setPlayerCount(4)" class="count-btn px-2.5 py-1 rounded-lg text-xs font-bold transition hover:bg-slate-800 text-slate-200" data-count="4">4</button>
+            <button onclick="setPlayerCount(5)" class="count-btn px-2.5 py-1 rounded-lg text-xs font-bold transition hover:bg-slate-800 text-slate-200" data-count="5">5</button>
+            <button onclick="setPlayerCount(6)" class="count-btn px-2.5 py-1 rounded-lg text-xs font-bold transition hover:bg-slate-800 text-slate-200" data-count="6">6</button>
           </div>
         </div>
 
@@ -663,7 +665,7 @@
   </div>
 
   <footer class="footer-bar w-full text-center py-3 text-xs border-t transition-colors duration-300">
-    Created by ToMi with AI · wersja 1.2.4
+    Created by ToMi with AI · wersja 1.2.5
   </footer>
 
   <script>
@@ -890,9 +892,9 @@
       document.querySelectorAll('.count-btn').forEach(btn => {
         const count = parseInt(btn.dataset.count);
         if (count === gameState.players.length) {
-          btn.className = 'count-btn active-count px-3 py-1 rounded-lg text-xs font-black transition bg-amber-500 text-slate-950 shadow-md';
+          btn.className = 'count-btn active-count px-2.5 py-1 rounded-lg text-xs font-black transition bg-amber-500 text-slate-950 shadow-md';
         } else {
-          btn.className = 'count-btn px-3 py-1 rounded-lg text-xs font-bold transition hover:bg-slate-700/50 text-slate-200 dark:text-slate-300';
+          btn.className = 'count-btn px-2.5 py-1 rounded-lg text-xs font-bold transition hover:bg-slate-700/50 text-slate-200 dark:text-slate-300';
         }
       });
 
@@ -910,7 +912,7 @@
       }
 
       if (addPlayerBtn) {
-        if (gameState.players.length >= 4) {
+        if (gameState.players.length >= 6) {
           addPlayerBtn.classList.add('hidden');
         } else {
           addPlayerBtn.classList.remove('hidden');
@@ -1084,15 +1086,17 @@
     }
 
     function setPlayerCount(count) {
-      count = Math.min(4, Math.max(2, count));
+      count = Math.min(6, Math.max(2, count));
       const currentCount = gameState.players.length;
       
       const rotationsMap = {
         2: [0, 180],
-        3: [0, 90, 180],
-        4: [0, 90, 180, 270]
+        3: [0, 120, 240],
+        4: [0, 90, 180, 270],
+        5: [0, 72, 144, 216, 288],
+        6: [0, 60, 120, 180, 240, 300]
       };
-      const defaultRotations = rotationsMap[count] || [0, 90, 180, 270];
+      const defaultRotations = rotationsMap[count] || [0, 60, 120, 180, 240, 300];
 
       if (count > currentCount) {
         for (let i = currentCount; i < count; i++) {
@@ -1126,8 +1130,8 @@
     }
 
     function addPlayer() {
-      if (gameState.players.length >= 4) {
-        showToast('Maksymalna liczba graczy to 4!');
+      if (gameState.players.length >= 6) {
+        showToast('Maksymalna liczba graczy to 6!');
         return;
       }
       setPlayerCount(gameState.players.length + 1);
