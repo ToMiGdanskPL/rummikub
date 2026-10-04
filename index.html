@@ -544,7 +544,7 @@
 
   </main>
 
-  <!-- ADVANCED PLAYERS CONFIG MODAL (W stylu załączonego zdjęcia) -->
+  <!-- ADVANCED PLAYERS CONFIG MODAL -->
   <div id="advancedPlayersModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-md hidden p-4 animate-fade-in">
     <div class="modal-container glass-panel bg-slate-900/98 border border-slate-700 rounded-3xl max-w-xl w-full max-h-[90vh] overflow-y-auto p-6 shadow-2xl space-y-5">
       
@@ -572,19 +572,18 @@
           <div class="w-8 h-8 rounded-full bg-slate-800 border border-slate-600 flex items-center justify-center z-10">
             <i class="fa-solid fa-bullseye text-amber-400 text-xs"></i>
           </div>
-          <!-- Dynamicznue generowane kropki graczy na podglądzie -->
           <div id="tablePreviewDots" class="absolute inset-0 pointer-events-none"></div>
         </div>
         <p class="text-center text-xs text-slate-400">Podgląd układu kątowego przy stole</p>
 
-        <!-- Lista kontrolek kątów z przyciskami w stylu ze zdjęcia -->
+        <!-- Lista kontrolek kątów -->
         <div id="advancedPlayersList" class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
           <!-- Wypełniane dynamicznie -->
         </div>
       </div>
 
       <div class="pt-3 border-t border-slate-700/55 text-center">
-        <button onclick="closeAdvancedPlayersModal()" class="w-full py-3 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-extrabold text-sm transition shadow-lg">
+        <button onclick="saveAndCloseAdvancedPlayersModal()" class="w-full py-3 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-extrabold text-sm transition shadow-lg">
           Zatwierdź i zamknij
         </button>
       </div>
@@ -686,7 +685,7 @@
   </div>
 
   <footer class="footer-bar w-full text-center py-3 text-xs border-t transition-colors duration-300">
-    Created by ToMi with AI · wersja 1.2.7
+    Created by ToMi with AI · wersja 1.2.8
   </footer>
 
   <script>
@@ -730,6 +729,7 @@
       lastActivePlayerRotationBase: 0
     };
 
+    let tempAdvancedPlayers = [];
     let synth = null;
 
     function initAudio() {
@@ -812,13 +812,24 @@
     }
 
     function openAdvancedPlayersModal() {
+      // Klonujemy aktualny stan pozycji do bufora tymczasowego
+      tempAdvancedPlayers = JSON.parse(JSON.stringify(gameState.players));
       renderAdvancedPlayersModalContent();
       document.getElementById('advancedPlayersModal').classList.remove('hidden');
     }
 
     function closeAdvancedPlayersModal() {
+      // Zamknięcie za pomocą X - odrzucamy zmiany (nic nie kopiujemy z tempAdvancedPlayers)
       document.getElementById('advancedPlayersModal').classList.add('hidden');
       renderSetupPlayerList();
+    }
+
+    function saveAndCloseAdvancedPlayersModal() {
+      // Zatwierdzenie zmian - przypisujemy tablicę tymczasową do głównego stanu graczy
+      gameState.players = JSON.parse(JSON.stringify(tempAdvancedPlayers));
+      document.getElementById('advancedPlayersModal').classList.add('hidden');
+      renderSetupPlayerList();
+      showToast('Zaktualizowano pozycje graczy');
     }
 
     function renderAdvancedPlayersModalContent() {
@@ -829,10 +840,9 @@
       listContainer.innerHTML = '';
       dotsContainer.innerHTML = '';
 
-      gameState.players.forEach((player, index) => {
+      tempAdvancedPlayers.forEach((player, index) => {
         const displayName = player.name && player.name.trim() !== '' ? player.name.trim() : `Gracz ${index + 1}`;
 
-        // Element przycisku sterowania kątem w stylu z załączonego zdjęcia
         const card = document.createElement('div');
         card.className = 'flex items-center justify-between p-3 rounded-2xl border border-slate-700/60 bg-slate-800/40';
         card.style.borderLeft = `4px solid ${player.colorHex}`;
@@ -845,22 +855,21 @@
             <span class="text-xs font-bold text-white truncate max-w-[90px]">${displayName}</span>
           </div>
           <div class="flex items-center gap-1 bg-slate-900/80 p-1 rounded-xl border border-slate-700/60 flex-shrink-0">
-            <button onclick="adjustPlayerRotation(${index}, -15)" class="w-8 h-8 rounded-lg bg-slate-800 hover:bg-slate-700 text-amber-400 font-bold transition active:scale-95 flex items-center justify-center text-xs" title="-15°">
+            <button onclick="adjustTempPlayerRotation(${index}, -15)" class="w-8 h-8 rounded-lg bg-slate-800 hover:bg-slate-700 text-amber-400 font-bold transition active:scale-95 flex items-center justify-center text-xs" title="-15°">
               <i class="fa-solid fa-chevron-left"></i>
             </button>
             <div class="w-12 text-center text-xs font-mono font-extrabold text-amber-400">
               ${player.rotation}°
             </div>
-            <button onclick="adjustPlayerRotation(${index}, 15)" class="w-8 h-8 rounded-lg bg-slate-800 hover:bg-slate-700 text-amber-400 font-bold transition active:scale-95 flex items-center justify-center text-xs" title="+15°">
+            <button onclick="adjustTempPlayerRotation(${index}, 15)" class="w-8 h-8 rounded-lg bg-slate-800 hover:bg-slate-700 text-amber-400 font-bold transition active:scale-95 flex items-center justify-center text-xs" title="+15°">
               <i class="fa-solid fa-chevron-right"></i>
             </button>
           </div>
         `;
         listContainer.appendChild(card);
 
-        // Kropka podglądu na miniaturze stołu
         const rad = ((player.rotation - 90) * Math.PI) / 180;
-        const radius = 68; // promień w pikselach wewnątrz okręgu podglądu
+        const radius = 68;
         const cx = 96 + radius * Math.cos(rad);
         const cy = 96 + radius * Math.sin(rad);
 
@@ -874,11 +883,11 @@
       });
     }
 
-    function adjustPlayerRotation(index, delta) {
-      let current = gameState.players[index].rotation;
+    function adjustTempPlayerRotation(index, delta) {
+      let current = tempAdvancedPlayers[index].rotation;
       current = (current + delta) % 360;
       if (current < 0) current += 360;
-      gameState.players[index].rotation = current;
+      tempAdvancedPlayers[index].rotation = current;
       renderAdvancedPlayersModalContent();
     }
 
@@ -961,12 +970,12 @@
           colorPalette.appendChild(colorBtn);
         });
 
-        // WYMAGANIE: Stopnie tylko do wglądu w głównym panelu (otwierają szybki podgląd zaawansowany)
+        // Wskaźnik kąta (bez przycisku z kołem zębatym)
         const rotationBadge = document.createElement('button');
         rotationBadge.type = 'button';
         rotationBadge.className = 'theme-btn-bg px-2.5 py-1.5 rounded-lg bg-slate-800/80 border border-slate-700 text-xs font-bold text-amber-400 hover:bg-slate-700 transition flex-shrink-0 flex items-center justify-center gap-1 h-[38px] w-[70px] cursor-pointer';
         rotationBadge.innerHTML = `<i class="fa-solid fa-compass text-[10px]"></i> ${player.rotation}°`;
-        rotationBadge.title = "Kąt pozycji (tylko do wglądu - kliknij, aby otworzyć zaawansowane ustawienia)";
+        rotationBadge.title = "Kąt pozycji (kliknij, aby otworzyć zaawansowane ustawienia)";
         rotationBadge.onclick = () => openAdvancedPlayersModal();
 
         row.appendChild(orderBox);
@@ -1382,16 +1391,6 @@
       }, 100);
     }
 
-    function pauseTurnTimer() {
-      if (gameState.isTimerRunning) {
-        gameState.isTimerRunning = false;
-        const now = Date.now();
-        gameState.accumulatedMatchMs += (now - gameState.matchStartTimestamp);
-        gameState.pauseTimestamp = now;
-        updatePauseButtonUI();
-      }
-    }
-
     function togglePause() {
       const now = Date.now();
       if (gameState.isTimerRunning) {
@@ -1590,7 +1589,8 @@
     }
 
     function finishGameSession() {
-      pauseTurnTimer();
+      clearInterval(gameState.timerInterval);
+      gameState.isTimerRunning = false;
       recordCurrentTurnStats();
 
       const summaryList = document.getElementById('summaryContentList');
