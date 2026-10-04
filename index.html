@@ -665,7 +665,7 @@
   </div>
 
   <footer class="footer-bar w-full text-center py-3 text-xs border-t transition-colors duration-300">
-    Created by ToMi with AI · wersja 1.2.5
+    Created by ToMi with AI · wersja 1.2.6
   </footer>
 
   <script>
@@ -1165,11 +1165,12 @@
         isChessMode = false;
       }
 
+      // POPRAWKA: Dynamiczne przypisywanie nazwy bazującej na właściwym indeksie gracza (idx + 1)
       gameState.players.forEach((p, idx) => {
-        if (!p.displayName) {
-          p.displayName = (p.name && p.name.trim()) ? p.name.trim() : `Gracz ${idx + 1}`;
-        } else if (p.name && p.name.trim()) {
+        if (p.name && p.name.trim() !== '') {
           p.displayName = p.name.trim();
+        } else {
+          p.displayName = `Gracz ${idx + 1}`;
         }
         p.chessBank = gameState.chessTime;
         p.turnsPlayed = 0;
