@@ -651,7 +651,7 @@
   </div>
 
   <footer class="footer-bar w-full text-center py-3 text-xs border-t transition-colors duration-300">
-    Created by ToMi with AI · wersja 1.0.8
+    Created by ToMi with AI · wersja 1.0.9
   </footer>
 
   <script>
@@ -1100,10 +1100,15 @@
       const newIndex = index + direction;
       if (newIndex < 0 || newIndex >= gameState.players.length) return;
       
-      // Zmiana kolejności graczy w tablicy (stopnie p.rotation pozostają bez zmian)
+      const currentRotation = gameState.players[index].rotation;
+      const targetRotation = gameState.players[newIndex].rotation;
+
       const temp = gameState.players[index];
       gameState.players[index] = gameState.players[newIndex];
       gameState.players[newIndex] = temp;
+      
+      gameState.players[index].rotation = currentRotation;
+      gameState.players[newIndex].rotation = targetRotation;
       
       renderSetupPlayerList();
     }
