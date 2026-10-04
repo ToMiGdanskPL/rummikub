@@ -399,22 +399,22 @@
         <div class="p-3.5 rounded-xl border border-slate-700/60 bg-slate-800/40 flex items-center justify-between gap-3">
           <div class="flex items-center gap-3">
             <!-- Icon Only Toggle Button (Infinity / Clock) placed BEFORE the title text -->
-            <button id="toggleUnlimitedGameBtn" onclick="toggleUnlimitedGameDuration()" class="w-10 h-10 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 font-semibold flex items-center justify-center transition active:scale-95 flex-shrink-0" title="Wyłącz / Włącz limit czasu gry">
-              <i id="unlimitedToggleIcon" class="fa-solid fa-infinity text-amber-400 text-lg"></i>
+            <button id="toggleUnlimitedGameBtn" onclick="toggleUnlimitedGameDuration()" class="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-400 border border-amber-500/40 font-bold flex items-center justify-center transition active:scale-95 flex-shrink-0" title="Wyłącz / Włącz limit czasu gry">
+              <i id="unlimitedToggleIcon" class="fa-solid fa-clock text-amber-400 text-lg"></i>
             </button>
 
             <div>
               <div class="text-sm font-bold time-val-text flex items-center gap-2">
                 <span class="tile-title-text">Limit czasu:</span>
-                <span id="gameDurationValDisplay" class="text-amber-500 text-base font-extrabold">25 min</span>
+                <span id="gameDurationValDisplay" class="text-amber-500 text-base font-extrabold">Bez limitu</span>
               </div>
-              <p id="gameDurationSubtext" class="tile-sub-text text-xs text-slate-400">Regulacja ±1 min</p>
+              <p id="gameDurationSubtext" class="tile-sub-text text-xs text-slate-400">Gra bez ograniczenia czasowego</p>
             </div>
           </div>
 
           <div class="flex items-center gap-1.5">
             <!-- Controls Box (+ / -) -->
-            <div id="gameDurationControls" class="tile-controls-box flex items-center gap-1 bg-slate-900/60 p-1 rounded-xl border border-slate-700/60 flex-shrink-0">
+            <div id="gameDurationControls" class="tile-controls-box flex items-center gap-1 bg-slate-900/60 p-1 rounded-xl border border-slate-700/60 flex-shrink-0 hidden">
               <button onclick="adjustGameDuration(-1)" class="tile-ctrl-btn w-8 h-8 rounded-lg bg-slate-800 hover:bg-slate-700 text-white font-bold text-base transition active:scale-90 flex items-center justify-center" title="-1 minuta">
                 -
               </button>
@@ -453,7 +453,7 @@
           </span>
           <span id="matchDurationBadge" class="px-3 py-1 rounded-full text-xs font-bold bg-amber-500/20 text-amber-400 border border-amber-500/30 flex items-center gap-1.5">
             <i class="fa-solid fa-clock text-[10px]"></i>
-            <span id="matchDurationText">Mecz: 25:00</span>
+            <span id="matchDurationText">Mecz: Bez limitu</span>
           </span>
         </div>
 
@@ -591,7 +591,7 @@
             <i class="fa-solid fa-clock text-xs"></i> 2. Całkowity czas gry
           </h4>
           <p class="text-xs text-slate-400 leading-relaxed">
-            Ustaw limit czasu całej gry (domyślnie 25 minut, regulowany z krokiem 1 minuty) lub wyłącz limit przyciskiem **Bez limitu**.
+            Domyślnie gra uruchamia się bez limitu czasu całej gry. Możesz włączyć limit czasu całej rozgrywki przyciskiem i regulować go z krokiem 1 minuty.
           </p>
         </div>
 
@@ -663,7 +663,7 @@
   </div>
 
   <footer class="footer-bar w-full text-center py-3 text-xs border-t transition-colors duration-300">
-    Created by ToMi with AI · wersja 1.2.3
+    Created by ToMi with AI · wersja 1.2.4
   </footer>
 
   <script>
@@ -684,7 +684,7 @@
       customTime: 40,
       chessTime: 300,
       totalGameDurationMinutes: 25,
-      isUnlimitedGameDuration: false,
+      isUnlimitedGameDuration: true,
       remainingGameSeconds: 25 * 60,
       accumulatedMatchMs: 0,
       matchStartTimestamp: 0,
