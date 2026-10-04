@@ -679,7 +679,7 @@
   </div>
 
   <footer class="footer-bar w-full text-center py-3 text-xs border-t transition-colors duration-300">
-    Created by ToMi with AI · wersja 1.4.0
+    Created by ToMi with AI · wersja 1.4.1
   </footer>
 
   <script>
@@ -859,7 +859,6 @@
         `;
         listContainer.appendChild(card);
 
-        // 0 stopni znajduje się na dole okręgu (dodanie 90 stopni przesuwa bazę kąta z prawej/góry na dół)
         const rad = ((player.rotation + 90) * Math.PI) / 180;
         const radius = 68;
         const cx = 96 + radius * Math.cos(rad);
@@ -884,7 +883,6 @@
     }
 
     function getDefaultRotations(count) {
-      // 0 stopni na dole okręgu
       const rotationsMap = {
         2: [0, 180],
         3: [0, 120, 240],
@@ -1106,7 +1104,7 @@
       if (customTile) customTile.className = 'p-3.5 rounded-xl border transition inactive-tile border-slate-700/60 bg-slate-800/40 flex items-center justify-between gap-3';
       
       const chessTile = document.getElementById('chessTimeTile');
-      if (gameState.players.length === 2 && chessTile) {
+      if (chessTile) {
         chessTile.className = 'p-3.5 rounded-xl border transition inactive-tile border-slate-700/60 bg-slate-800/40 flex items-center justify-between gap-3';
       }
 
@@ -1158,8 +1156,9 @@
         btn.className = 'time-opt-btn p-3 rounded-xl border text-center transition font-semibold text-sm flex flex-col items-center gap-1 border-slate-700/60 bg-slate-800/40 hover:bg-slate-700/50';
       });
 
+      // Zamiast aktywować oba, wyłączamy kafel niestandardowy i aktywujemy wyłącznie szachowy
       const customTile = document.getElementById('customTimeTile');
-      if (customTile) customTile.className = 'p-3.5 rounded-xl border transition active-tile border-amber-500 bg-amber-500/20 text-amber-400 flex items-center justify-between gap-3';
+      if (customTile) customTile.className = 'p-3.5 rounded-xl border transition inactive-tile border-slate-700/60 bg-slate-800/40 flex items-center justify-between gap-3';
       
       const chessTile = document.getElementById('chessTimeTile');
       if (chessTile) chessTile.className = 'p-3.5 rounded-xl border transition active-tile border-purple-500 bg-purple-500/20 text-purple-400 flex items-center justify-between gap-3';
