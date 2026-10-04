@@ -129,7 +129,6 @@
       color: #0f172a !important;
     }
 
-    /* Light Mode Overrides for Time Options and Custom Tiles */
     body.light-theme .time-opt-btn {
       background-color: #ffffff !important;
       border-color: #cbd5e1 !important;
@@ -145,7 +144,6 @@
       box-shadow: 0 4px 14px -2px rgba(245, 158, 11, 0.25);
     }
 
-    /* Inactive custom/chess tiles in light theme */
     body.light-theme #customTimeTile.inactive-tile,
     body.light-theme #chessTimeTile.inactive-tile {
       background-color: #ffffff !important;
@@ -153,7 +151,6 @@
       color: #334155 !important;
     }
 
-    /* Active Custom Tile in light theme */
     body.light-theme #customTimeTile.active-tile {
       background-color: #fef3c7 !important;
       border-color: #f59e0b !important;
@@ -167,7 +164,6 @@
       color: #b45309 !important;
     }
 
-    /* Active Chess Tile in light theme */
     body.light-theme #chessTimeTile.active-tile {
       background-color: #f3e8ff !important;
       border-color: #a855f7 !important;
@@ -181,7 +177,6 @@
       color: #7e22ce !important;
     }
 
-    /* Controls box & buttons in Light Mode */
     body.light-theme .tile-controls-box {
       background-color: #e2e8f0 !important;
       border-color: #cbd5e1 !important;
@@ -195,7 +190,6 @@
       background-color: #f1f5f9 !important;
     }
 
-    /* Player Count Selector Contrast Fixes */
     body.light-theme .count-btn-container {
       background-color: #e2e8f0 !important;
       border-color: #cbd5e1 !important;
@@ -254,19 +248,16 @@
       </div>
 
       <div class="flex items-center gap-2">
-        <!-- Sound Toggle Button -->
         <button id="soundToggleBtn" onclick="toggleSound()" class="theme-btn-bg px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition flex items-center gap-2 text-sm border border-slate-700 h-[38px]">
           <i id="soundIcon" class="fa-solid fa-volume-xmark text-amber-400"></i>
           <span class="hidden sm:inline text-xs font-semibold">Dźwięk</span>
         </button>
 
-        <!-- Theme Toggle Button (Light/Dark Mode) -->
         <button id="themeToggleBtn" onclick="toggleTheme()" class="theme-btn-bg px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition flex items-center justify-center gap-1.5 text-sm border border-slate-700 h-[38px]" title="Przełącz motyw (Jasny / Ciemny)">
           <i id="themeIcon" class="fa-solid fa-sun text-amber-400 text-base"></i>
           <span id="themeText" class="hidden sm:inline text-xs font-semibold">Jasny</span>
         </button>
 
-        <!-- Info Modal Button -->
         <button id="infoModalBtn" onclick="openInfoModal()" class="theme-btn-bg px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-amber-400 transition flex items-center justify-center text-sm border border-slate-700 h-[38px]" title="Informacje i Instrukcja">
           <i class="fa-solid fa-circle-info text-amber-400 text-base"></i>
         </button>
@@ -287,7 +278,6 @@
           <i class="fa-solid fa-stopwatch text-amber-400"></i> Czas Tury
         </h3>
         
-        <!-- Standard Time Buttons Grid -->
         <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3">
           <button onclick="selectPresetTime(30)" id="timeBtn30" class="time-opt-btn p-3 rounded-xl border text-center transition font-semibold text-sm flex flex-col items-center gap-1 border-slate-700 bg-slate-800/60 hover:bg-slate-700">
             <span class="text-lg">30s</span>
@@ -307,7 +297,6 @@
           </button>
         </div>
 
-        <!-- Custom Time Tile -->
         <div id="customTimeTile" class="p-3.5 rounded-xl border transition active-tile border-amber-500 bg-amber-500/20 text-amber-400 flex items-center justify-between gap-3">
           <div onclick="selectCustomTime(true)" class="cursor-pointer flex-grow flex items-center gap-3">
             <div class="w-10 h-10 rounded-lg bg-amber-500/20 flex items-center justify-center text-amber-500 font-bold text-lg border border-amber-500/30 flex-shrink-0">
@@ -332,7 +321,6 @@
           </div>
         </div>
 
-        <!-- Chess Time Tile (Single Instance - Visible ONLY when exactly 2 players are selected) -->
         <div id="chessTimeTile" class="p-3.5 rounded-xl border transition inactive-tile border-slate-700 bg-slate-800/60 flex items-center justify-between gap-3">
           <div onclick="selectChessTime()" class="cursor-pointer flex-grow flex items-center gap-3">
             <div class="w-10 h-10 rounded-lg bg-purple-500/20 text-purple-400 border border-purple-500/30 flex items-center justify-center font-bold text-lg flex-shrink-0">
@@ -368,14 +356,22 @@
             <p class="text-xs text-slate-400 mt-0.5">Ustaw unikalne imiona, kolory i pozycje przy stole.</p>
           </div>
 
-          <!-- Player Count Buttons (2 to 6 Max) -->
-          <div class="count-btn-container flex items-center bg-slate-900/60 p-1 rounded-xl border border-slate-700/60 flex-wrap gap-0.5">
-            <span class="count-btn-label text-xs text-slate-300 font-semibold px-2">Ilość:</span>
-            <button onclick="setPlayerCount(2)" class="count-btn active-count px-2.5 py-1 rounded-lg text-xs font-black transition bg-amber-500 text-slate-950" data-count="2">2</button>
-            <button onclick="setPlayerCount(3)" class="count-btn px-2.5 py-1 rounded-lg text-xs font-bold transition hover:bg-slate-800 text-slate-200" data-count="3">3</button>
-            <button onclick="setPlayerCount(4)" class="count-btn px-2.5 py-1 rounded-lg text-xs font-bold transition hover:bg-slate-800 text-slate-200" data-count="4">4</button>
-            <button onclick="setPlayerCount(5)" class="count-btn px-2.5 py-1 rounded-lg text-xs font-bold transition hover:bg-slate-800 text-slate-200" data-count="5">5</button>
-            <button onclick="setPlayerCount(6)" class="count-btn px-2.5 py-1 rounded-lg text-xs font-bold transition hover:bg-slate-800 text-slate-200" data-count="6">6</button>
+          <div class="flex items-center gap-2">
+            <!-- Player Count Buttons (2 to 6 Max) -->
+            <div class="count-btn-container flex items-center bg-slate-900/60 p-1 rounded-xl border border-slate-700/60 flex-wrap gap-0.5">
+              <span class="count-btn-label text-xs text-slate-300 font-semibold px-2">Ilość:</span>
+              <button onclick="setPlayerCount(2)" class="count-btn active-count px-2.5 py-1 rounded-lg text-xs font-black transition bg-amber-500 text-slate-950" data-count="2">2</button>
+              <button onclick="setPlayerCount(3)" class="count-btn px-2.5 py-1 rounded-lg text-xs font-bold transition hover:bg-slate-800 text-slate-200" data-count="3">3</button>
+              <button onclick="setPlayerCount(4)" class="count-btn px-2.5 py-1 rounded-lg text-xs font-bold transition hover:bg-slate-800 text-slate-200" data-count="4">4</button>
+              <button onclick="setPlayerCount(5)" class="count-btn px-2.5 py-1 rounded-lg text-xs font-bold transition hover:bg-slate-800 text-slate-200" data-count="5">5</button>
+              <button onclick="setPlayerCount(6)" class="count-btn px-2.5 py-1 rounded-lg text-xs font-bold transition hover:bg-slate-800 text-slate-200" data-count="6">6</button>
+            </div>
+
+            <!-- Advanced Settings Button Added Right Next to Player Count -->
+            <button onclick="openAdvancedPlayersModal()" class="theme-btn-bg px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-amber-400 font-semibold text-xs border border-slate-700 h-[38px] flex items-center gap-1.5 transition" title="Zaawansowane ustawienia graczy i pozycji">
+              <i class="fa-solid fa-gear"></i>
+              <span class="hidden sm:inline">Pozycje</span>
+            </button>
           </div>
         </div>
 
@@ -389,7 +385,7 @@
         </button>
       </div>
 
-      <!-- Overall Game Duration Box (Hidden when Chess Mode is active) -->
+      <!-- Overall Game Duration Box -->
       <div id="gameDurationBox" class="glass-panel rounded-2xl p-4 sm:p-6 space-y-4">
         <div>
           <h3 class="text-sm font-bold uppercase tracking-wider text-slate-400 flex items-center gap-2">
@@ -400,7 +396,6 @@
 
         <div class="p-3.5 rounded-xl border border-slate-700/60 bg-slate-800/40 flex items-center justify-between gap-3">
           <div class="flex items-center gap-3">
-            <!-- Icon Only Toggle Button (Infinity / Clock) placed BEFORE the title text -->
             <button id="toggleUnlimitedGameBtn" onclick="toggleUnlimitedGameDuration()" class="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-400 border border-amber-500/40 font-bold flex items-center justify-center transition active:scale-95 flex-shrink-0" title="Wyłącz / Włącz limit czasu gry">
               <i id="unlimitedToggleIcon" class="fa-solid fa-clock text-amber-400 text-lg"></i>
             </button>
@@ -415,7 +410,6 @@
           </div>
 
           <div class="flex items-center gap-1.5">
-            <!-- Controls Box (+ / -) -->
             <div id="gameDurationControls" class="tile-controls-box flex items-center gap-1 bg-slate-900/60 p-1 rounded-xl border border-slate-700/60 flex-shrink-0 hidden">
               <button onclick="adjustGameDuration(-1)" class="tile-ctrl-btn w-8 h-8 rounded-lg bg-slate-800 hover:bg-slate-700 text-white font-bold text-base transition active:scale-90 flex items-center justify-center" title="-1 minuta">
                 -
@@ -429,13 +423,11 @@
       </div>
 
       <div class="pt-2 text-center space-y-3">
-        <!-- Standard Start Game Button -->
         <button id="startGameBtn" onclick="startGame(false)" class="w-full sm:w-auto px-10 py-4 rounded-2xl bg-gradient-to-r from-amber-500 via-orange-500 to-red-600 hover:from-amber-400 hover:to-red-500 text-slate-950 font-black text-lg tracking-wider shadow-xl shadow-orange-950/20 transform active:scale-95 transition flex items-center justify-center gap-3 mx-auto border border-amber-300/40">
           <i class="fa-solid fa-play text-slate-950 text-xl"></i>
           <span>ROZPOCZNIJ GRĘ</span>
         </button>
 
-        <!-- Chess Mode Button -->
         <button id="chessModeBtn" onclick="startGame(true)" class="w-full sm:w-auto px-8 py-3.5 rounded-2xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-extrabold text-base tracking-wider shadow-lg transform active:scale-95 transition flex items-center justify-center gap-2 mx-auto border border-purple-400/30 hidden">
           <i class="fa-solid fa-chess text-lg"></i>
           <span>TRYB SZACHOWY</span>
@@ -446,7 +438,6 @@
     <!-- STANDARD GAME PLAY VIEW -->
     <section id="gameView" class="w-full space-y-6 hidden animate-fade-in">
 
-      <!-- Active Turn & Countdown Wheel Card -->
       <div id="activePlayerCard" class="glass-panel rounded-3xl p-5 sm:p-8 text-center relative overflow-hidden player-card-glow border-2 transition-all duration-300">
         
         <div class="flex items-center justify-between mb-3 flex-wrap gap-2">
@@ -459,9 +450,7 @@
           </span>
         </div>
 
-        <!-- Rotating Inner Box -->
         <div id="rotatingTimerBox" class="timer-card-rotate py-2 flex flex-col items-center justify-center my-2">
-          <!-- Active Player Name -->
           <div class="mb-2">
             <h2 id="activePlayerName" class="section-title text-3xl sm:text-5xl font-black tracking-tight text-white drop-shadow-md">
               Gracz 1
@@ -469,7 +458,6 @@
             <p id="activePlayerSubtext" class="text-xs font-medium text-slate-400 mt-1">Twoja tura - ułóż wyłożenie lub pociągnij kostkę</p>
           </div>
 
-          <!-- Circular Countdown Timer -->
           <div id="timerCircleContainer" onclick="nextTurn()" class="relative w-48 h-48 sm:w-60 sm:h-60 my-2 flex items-center justify-center cursor-pointer group transition-transform duration-100" title="Kliknij, aby przejść do następnego gracza">
             <svg class="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
               <circle cx="50" cy="50" r="42" stroke="currentColor" stroke-width="6" class="text-slate-700/40" fill="transparent" />
@@ -482,13 +470,11 @@
             </div>
           </div>
 
-          <!-- Next Player Display Under Timer Circle -->
           <div class="mt-2 text-xs font-medium text-slate-400 mt-1">
             <span id="nextUpText" class="text-slate-400 font-medium">Kolejny gracz: -</span>
           </div>
         </div>
 
-        <!-- Turn Quick Actions -->
         <div class="grid grid-cols-2 gap-2 sm:gap-3 max-w-xs mx-auto pt-3 border-t border-slate-700/40">
           <button id="pauseBtn" onclick="togglePause()" class="theme-btn-bg py-2.5 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs border border-slate-700 flex items-center justify-center gap-1.5 transition active:scale-95">
             <i id="pauseIcon" class="fa-solid fa-pause text-amber-400"></i>
@@ -500,7 +486,6 @@
           </button>
         </div>
 
-        <!-- BIG NEXT TURN BUTTON -->
         <div class="mt-4">
           <button id="nextTurnBtn" onclick="nextTurn()" class="w-full py-4 rounded-2xl font-black text-xl tracking-wider shadow-lg transform active:scale-98 transition flex items-center justify-center gap-3 border">
             <span>ZAKOŃCZ TURĘ</span>
@@ -519,10 +504,8 @@
         </span>
       </div>
 
-      <!-- Split Screen Cards Container -->
       <div class="grid grid-rows-2 gap-4 h-[65vh] w-full max-w-md mx-auto">
         
-        <!-- Player 2 Top Half -->
         <div id="chessP2Card" onclick="handleChessCardClick(1)" class="chess-split-card glass-panel rounded-3xl p-6 flex flex-col items-center justify-center transform rotate-180 border-2 cursor-pointer select-none relative overflow-hidden">
           <div class="text-center">
             <h3 id="chessP2Name" class="section-title text-2xl sm:text-3xl font-black text-white">Gracz 2</h3>
@@ -534,7 +517,6 @@
           <div class="text-xs font-bold uppercase tracking-widest text-slate-400">Dotknij, aby przełączyć</div>
         </div>
 
-        <!-- Player 1 Bottom Half -->
         <div id="chessP1Card" onclick="handleChessCardClick(0)" class="chess-split-card glass-panel rounded-3xl p-6 flex flex-col items-center justify-center border-2 cursor-pointer select-none relative overflow-hidden">
           <div class="text-center">
             <h3 id="chessP1Name" class="section-title text-2xl sm:text-3xl font-black text-white">Gracz 1</h3>
@@ -548,7 +530,6 @@
 
       </div>
 
-      <!-- Chess Mode Controls -->
       <div class="flex items-center justify-center gap-3 max-w-md mx-auto pt-2">
         <button id="chessPauseBtn" onclick="togglePause()" class="theme-btn-bg py-3 px-6 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-sm border border-slate-700 flex items-center justify-center gap-2">
           <i id="chessPauseIcon" class="fa-solid fa-pause text-amber-400"></i>
@@ -563,6 +544,55 @@
 
   </main>
 
+  <!-- ADVANCED PLAYERS CONFIG MODAL (W stylu załączonego zdjęcia) -->
+  <div id="advancedPlayersModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-md hidden p-4 animate-fade-in">
+    <div class="modal-container glass-panel bg-slate-900/98 border border-slate-700 rounded-3xl max-w-xl w-full max-h-[90vh] overflow-y-auto p-6 shadow-2xl space-y-5">
+      
+      <div class="flex items-center justify-between border-b border-slate-700/50 pb-3">
+        <div class="flex items-center gap-2">
+          <div class="w-8 h-8 rounded-lg bg-amber-500/20 text-amber-500 flex items-center justify-center font-bold">
+            <i class="fa-solid fa-arrows-split-up-and-left"></i>
+          </div>
+          <h3 class="modal-text text-lg font-black text-white">Zaawansowane pozycje graczy</h3>
+        </div>
+        <button onclick="closeAdvancedPlayersModal()" class="w-8 h-8 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white flex items-center justify-center transition">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <div class="space-y-4">
+        <!-- Wizualny podgląd stołu z kątomierzem -->
+        <div class="relative w-48 h-48 mx-auto bg-slate-950/60 rounded-full border border-slate-700 flex items-center justify-center shadow-inner overflow-hidden" id="tablePreviewContainer">
+          <div class="absolute inset-2 rounded-full border border-dashed border-slate-700/60 flex items-center justify-center">
+            <div class="absolute top-1 text-[9px] text-slate-500 font-mono">0°</div>
+            <div class="absolute right-1 text-[9px] text-slate-500 font-mono">90°</div>
+            <div class="absolute bottom-1 text-[9px] text-slate-500 font-mono">180°</div>
+            <div class="absolute left-1 text-[9px] text-slate-500 font-mono">270°</div>
+          </div>
+          <div class="w-8 h-8 rounded-full bg-slate-800 border border-slate-600 flex items-center justify-center z-10">
+            <i class="fa-solid fa-bullseye text-amber-400 text-xs"></i>
+          </div>
+          <!-- Dynamicznue generowane kropki graczy na podglądzie -->
+          <div id="tablePreviewDots" class="absolute inset-0 pointer-events-none"></div>
+        </div>
+        <p class="text-center text-xs text-slate-400">Podgląd układu kątowego przy stole</p>
+
+        <!-- Lista kontrolek kątów z przyciskami w stylu ze zdjęcia -->
+        <div id="advancedPlayersList" class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+          <!-- Wypełniane dynamicznie -->
+        </div>
+      </div>
+
+      <div class="pt-3 border-t border-slate-700/55 text-center">
+        <button onclick="closeAdvancedPlayersModal()" class="w-full py-3 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-extrabold text-sm transition shadow-lg">
+          Zatwierdź i zamknij
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- INFO & SUMMARY MODALS -->
   <div id="infoModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm hidden p-4 animate-fade-in">
     <div class="modal-container glass-panel bg-slate-900/95 border border-slate-700 rounded-3xl max-w-lg w-full max-h-[85vh] overflow-y-auto p-6 shadow-2xl space-y-5">
       
@@ -584,16 +614,16 @@
             <i class="fa-solid fa-stopwatch text-xs"></i> 1. Wybór czasu tury
           </h4>
           <p class="text-xs text-slate-400 leading-relaxed">
-            Możesz wybrać standardowy czas (30s, 60s, 90s, 120s), dostosować własny czas (kroki co 5 sekund) lub przy wyborze dokładnie 2 graczy aktywować **Czas szachowy**.
+            Możesz wybrać standardowy czas (30s, 60s, 90s, 120s), dostosować własny czas lub przy wyborze dokładnie 2 graczy aktywować Czas szachowy.
           </p>
         </div>
 
         <div class="space-y-1.5">
           <h4 class="font-bold modal-text text-white flex items-center gap-2 text-amber-500">
-            <i class="fa-solid fa-clock text-xs"></i> 2. Całkowity czas gry
+            <i class="fa-solid fa-arrows-split-up-and-left text-xs"></i> 2. Zaawansowane ustawienia pozycji
           </h4>
           <p class="text-xs text-slate-400 leading-relaxed">
-            Domyślnie gra uruchamia się bez limitu czasu całej gry. Możesz włączyć limit czasu całej rozgrywki przyciskiem i regulować go z krokiem 1 minuty.
+            Za pomocą przycisku "Pozycje" obok licznika graczy otwórz zaawansowany panel ustawień, gdzie ręcznie dostosujesz kąt rotacji (co 15° lub 30°) każdego gracza przy stole.
           </p>
         </div>
 
@@ -612,15 +642,6 @@
           </h4>
           <p class="text-xs text-slate-400 leading-relaxed">
             Po zakończeniu rozgrywki aplikacja wyświetli podsumowanie ze statystykami graczy (łączny czas gry oraz średni czas tury).
-          </p>
-        </div>
-
-        <div class="space-y-1.5">
-          <h4 class="font-bold modal-text text-white flex items-center gap-2 text-blue-500">
-            <i class="fa-solid fa-volume-high text-xs"></i> 5. Dźwięki i Powiadomienia
-          </h4>
-          <p class="text-xs text-slate-400 leading-relaxed">
-            Ostatnie 5 sekund każdej tury sygnalizowane jest dźwiękiem ostrzegawczym. Dźwięki można w każdej chwili wyciszyć przyciskiem w górnym pasku.
           </p>
         </div>
       </div>
@@ -665,7 +686,7 @@
   </div>
 
   <footer class="footer-bar w-full text-center py-3 text-xs border-t transition-colors duration-300">
-    Created by ToMi with AI · wersja 1.2.6
+    Created by ToMi with AI · wersja 1.2.7
   </footer>
 
   <script>
@@ -680,7 +701,6 @@
       { id: 'pink', name: 'Różowy', hex: '#ec4899' }
     ];
 
-    // Default configuration
     let gameState = {
       turnDuration: 40,
       customTime: 40,
@@ -784,13 +804,82 @@
     }
 
     function openInfoModal() {
-      const modal = document.getElementById('infoModal');
-      modal.classList.remove('hidden');
+      document.getElementById('infoModal').classList.remove('hidden');
     }
 
     function closeInfoModal() {
-      const modal = document.getElementById('infoModal');
-      modal.classList.add('hidden');
+      document.getElementById('infoModal').classList.add('hidden');
+    }
+
+    function openAdvancedPlayersModal() {
+      renderAdvancedPlayersModalContent();
+      document.getElementById('advancedPlayersModal').classList.remove('hidden');
+    }
+
+    function closeAdvancedPlayersModal() {
+      document.getElementById('advancedPlayersModal').classList.add('hidden');
+      renderSetupPlayerList();
+    }
+
+    function renderAdvancedPlayersModalContent() {
+      const listContainer = document.getElementById('advancedPlayersList');
+      const dotsContainer = document.getElementById('tablePreviewDots');
+      if (!listContainer || !dotsContainer) return;
+
+      listContainer.innerHTML = '';
+      dotsContainer.innerHTML = '';
+
+      gameState.players.forEach((player, index) => {
+        const displayName = player.name && player.name.trim() !== '' ? player.name.trim() : `Gracz ${index + 1}`;
+
+        // Element przycisku sterowania kątem w stylu z załączonego zdjęcia
+        const card = document.createElement('div');
+        card.className = 'flex items-center justify-between p-3 rounded-2xl border border-slate-700/60 bg-slate-800/40';
+        card.style.borderLeft = `4px solid ${player.colorHex}`;
+
+        card.innerHTML = `
+          <div class="flex items-center gap-2 min-w-0">
+            <div class="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold text-slate-950 flex-shrink-0" style="background-color: ${player.colorHex}">
+              ${index + 1}
+            </div>
+            <span class="text-xs font-bold text-white truncate max-w-[90px]">${displayName}</span>
+          </div>
+          <div class="flex items-center gap-1 bg-slate-900/80 p-1 rounded-xl border border-slate-700/60 flex-shrink-0">
+            <button onclick="adjustPlayerRotation(${index}, -15)" class="w-8 h-8 rounded-lg bg-slate-800 hover:bg-slate-700 text-amber-400 font-bold transition active:scale-95 flex items-center justify-center text-xs" title="-15°">
+              <i class="fa-solid fa-chevron-left"></i>
+            </button>
+            <div class="w-12 text-center text-xs font-mono font-extrabold text-amber-400">
+              ${player.rotation}°
+            </div>
+            <button onclick="adjustPlayerRotation(${index}, 15)" class="w-8 h-8 rounded-lg bg-slate-800 hover:bg-slate-700 text-amber-400 font-bold transition active:scale-95 flex items-center justify-center text-xs" title="+15°">
+              <i class="fa-solid fa-chevron-right"></i>
+            </button>
+          </div>
+        `;
+        listContainer.appendChild(card);
+
+        // Kropka podglądu na miniaturze stołu
+        const rad = ((player.rotation - 90) * Math.PI) / 180;
+        const radius = 68; // promień w pikselach wewnątrz okręgu podglądu
+        const cx = 96 + radius * Math.cos(rad);
+        const cy = 96 + radius * Math.sin(rad);
+
+        const dot = document.createElement('div');
+        dot.className = 'absolute w-4 h-4 rounded-full border-2 border-slate-900 shadow-md transform -translate-x-1/2 -translate-y-1/2 flex items-center justify-center text-[8px] font-black text-slate-950';
+        dot.style.backgroundColor = player.colorHex;
+        dot.style.left = `${cx}px`;
+        dot.style.top = `${cy}px`;
+        dot.innerText = index + 1;
+        dotsContainer.appendChild(dot);
+      });
+    }
+
+    function adjustPlayerRotation(index, delta) {
+      let current = gameState.players[index].rotation;
+      current = (current + delta) % 360;
+      if (current < 0) current += 360;
+      gameState.players[index].rotation = current;
+      renderAdvancedPlayersModalContent();
     }
 
     function renderSetupPlayerList() {
@@ -872,19 +961,18 @@
           colorPalette.appendChild(colorBtn);
         });
 
-        const rotationBtn = document.createElement('button');
-        rotationBtn.type = 'button';
-        rotationBtn.className = 'theme-btn-bg px-2.5 py-1.5 rounded-lg bg-slate-800 border border-slate-700 text-xs font-bold text-amber-500 hover:bg-slate-700 transition flex-shrink-0 flex items-center justify-center gap-1 h-[38px] w-[70px]';
-        rotationBtn.innerHTML = `<i class="fa-solid fa-arrows-rotate text-[10px]"></i> ${player.rotation}°`;
-        rotationBtn.onclick = () => {
-          player.rotation = (player.rotation + 90) % 360;
-          renderSetupPlayerList();
-        };
+        // WYMAGANIE: Stopnie tylko do wglądu w głównym panelu (otwierają szybki podgląd zaawansowany)
+        const rotationBadge = document.createElement('button');
+        rotationBadge.type = 'button';
+        rotationBadge.className = 'theme-btn-bg px-2.5 py-1.5 rounded-lg bg-slate-800/80 border border-slate-700 text-xs font-bold text-amber-400 hover:bg-slate-700 transition flex-shrink-0 flex items-center justify-center gap-1 h-[38px] w-[70px] cursor-pointer';
+        rotationBadge.innerHTML = `<i class="fa-solid fa-compass text-[10px]"></i> ${player.rotation}°`;
+        rotationBadge.title = "Kąt pozycji (tylko do wglądu - kliknij, aby otworzyć zaawansowane ustawienia)";
+        rotationBadge.onclick = () => openAdvancedPlayersModal();
 
         row.appendChild(orderBox);
         row.appendChild(nameContainer);
         row.appendChild(colorPalette);
-        row.appendChild(rotationBtn);
+        row.appendChild(rotationBadge);
 
         container.appendChild(row);
       });
@@ -1165,7 +1253,6 @@
         isChessMode = false;
       }
 
-      // POPRAWKA: Dynamiczne przypisywanie nazwy bazującej na właściwym indeksie gracza (idx + 1)
       gameState.players.forEach((p, idx) => {
         if (p.name && p.name.trim() !== '') {
           p.displayName = p.name.trim();
@@ -1583,7 +1670,6 @@
       }, 2500);
     }
 
-    // Initialize application interface
     document.addEventListener('DOMContentLoaded', () => {
       renderSetupPlayerList();
     });
