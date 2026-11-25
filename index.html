@@ -444,27 +444,27 @@
     <!-- STANDARD GAME PLAY VIEW -->
     <section id="gameView" class="w-full space-y-6 hidden animate-fade-in">
 
-      <div id="activePlayerCard" class="glass-panel timer-card-rotate rounded-3xl p-5 sm:p-8 text-center relative overflow-hidden player-card-glow border-2 max-w-xl mx-auto w-full">
+      <div id="activePlayerCard" class="glass-panel rounded-3xl p-4 sm:p-7 text-center relative overflow-hidden player-card-glow border-2 max-w-xl mx-auto w-full transition-all duration-300">
         
-        <div class="flex items-center justify-between mb-3 flex-wrap gap-2">
-          <span id="turnCounterBadge" class="px-3 py-1 rounded-full text-xs font-semibold bg-slate-800 text-slate-300 border border-slate-700">
-            Runda 1 • Tura 1
-          </span>
-          <span id="matchDurationBadge" class="px-3 py-1 rounded-full text-xs font-bold bg-amber-500/20 text-amber-400 border border-amber-500/30 flex items-center gap-1.5">
-            <i class="fa-solid fa-clock text-[10px]"></i>
-            <span id="matchDurationText">Mecz: Bez limitu</span>
-          </span>
-        </div>
+        <div id="rotatingTimerBox" class="timer-card-rotate py-1 flex flex-col items-center justify-center w-full">
+          <div class="w-full flex items-center justify-between mb-3 flex-wrap gap-2">
+            <span id="turnCounterBadge" class="px-3 py-1 rounded-full text-xs font-semibold bg-slate-800 text-slate-300 border border-slate-700">
+              Runda 1 • Tura 1
+            </span>
+            <span id="matchDurationBadge" class="px-3 py-1 rounded-full text-xs font-bold bg-amber-500/20 text-amber-400 border border-amber-500/30 flex items-center gap-1.5">
+              <i class="fa-solid fa-clock text-[10px]"></i>
+              <span id="matchDurationText">Mecz: Bez limitu</span>
+            </span>
+          </div>
 
-        <div id="rotatingTimerBox" class="py-2 flex flex-col items-center justify-center my-2">
           <div class="mb-2">
-            <h2 id="activePlayerName" class="section-title text-3xl sm:text-5xl font-black tracking-tight text-white drop-shadow-md">
+            <h2 id="activePlayerName" class="section-title text-2xl sm:text-4xl font-black tracking-tight text-white drop-shadow-md">
               Gracz 1
             </h2>
             <p id="activePlayerSubtext" class="text-xs font-medium text-slate-400 mt-1">Twoja tura - ułóż wyłożenie lub pociągnij kostkę</p>
           </div>
 
-          <div id="timerCircleContainer" class="tap-zone relative w-48 h-48 sm:w-60 sm:h-60 my-2 flex items-center justify-center cursor-pointer group transition-transform duration-100" title="Dotknij, aby przejść do następnego gracza">
+          <div id="timerCircleContainer" class="tap-zone relative w-44 h-44 sm:w-56 sm:h-56 my-2 flex items-center justify-center cursor-pointer group transition-transform duration-100" title="Dotknij, aby przejść do następnego gracza">
             <svg class="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
               <circle cx="50" cy="50" r="42" stroke="currentColor" stroke-width="6" class="text-slate-700/40" fill="transparent" />
               <circle id="timerProgressCircle" cx="50" cy="50" r="42" stroke="currentColor" stroke-width="6" stroke-linecap="round" class="timer-ring-circle text-amber-500" fill="transparent" stroke-dasharray="263.89" stroke-dashoffset="0" />
@@ -476,28 +476,29 @@
             </div>
           </div>
 
-          <div class="mt-2 text-xs font-medium text-slate-400 mt-1">
+          <div class="mt-1 mb-3 text-xs font-medium text-slate-400">
             <span id="nextUpText" class="text-slate-400 font-medium">Kolejny gracz: -</span>
+          </div>
+
+          <div class="grid grid-cols-2 gap-2 sm:gap-3 w-full max-w-xs mx-auto pt-3 border-t border-slate-700/40">
+            <button id="pauseBtn" onclick="togglePause()" class="theme-btn-bg py-2.5 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs border border-slate-700 flex items-center justify-center gap-1.5 transition active:scale-95">
+              <i id="pauseIcon" class="fa-solid fa-pause text-amber-400"></i>
+              <span id="pauseText">Pauza</span>
+            </button>
+
+            <button onclick="finishGameSession()" class="py-2.5 px-3 rounded-xl bg-red-950/40 hover:bg-red-900/60 text-red-300 font-semibold text-xs border border-red-800/50 flex items-center justify-center gap-1.5 transition active:scale-95">
+              <i class="fa-solid fa-flag text-red-400"></i> Zakończ grę
+            </button>
+          </div>
+
+          <div class="mt-3 w-full">
+            <button id="nextTurnBtn" class="tap-zone w-full py-3.5 rounded-2xl font-black text-lg sm:text-xl tracking-wider shadow-lg transform active:scale-98 transition flex items-center justify-center gap-3 border">
+              <span>ZAKOŃCZ TURĘ</span>
+              <i class="fa-solid fa-circle-chevron-right text-2xl"></i>
+            </button>
           </div>
         </div>
 
-        <div class="grid grid-cols-2 gap-2 sm:gap-3 max-w-xs mx-auto pt-3 border-t border-slate-700/40">
-          <button id="pauseBtn" onclick="togglePause()" class="theme-btn-bg py-2.5 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs border border-slate-700 flex items-center justify-center gap-1.5 transition active:scale-95">
-            <i id="pauseIcon" class="fa-solid fa-pause text-amber-400"></i>
-            <span id="pauseText">Pauza</span>
-          </button>
-
-          <button onclick="finishGameSession()" class="py-2.5 px-3 rounded-xl bg-red-950/40 hover:bg-red-900/60 text-red-300 font-semibold text-xs border border-red-800/50 flex items-center justify-center gap-1.5 transition active:scale-95">
-            <i class="fa-solid fa-flag text-red-400"></i> Zakończ grę
-          </button>
-        </div>
-
-        <div class="mt-4">
-          <button id="nextTurnBtn" class="tap-zone w-full py-4 rounded-2xl font-black text-xl tracking-wider shadow-lg transform active:scale-98 transition flex items-center justify-center gap-3 border">
-            <span>ZAKOŃCZ TURĘ</span>
-            <i class="fa-solid fa-circle-chevron-right text-2xl"></i>
-          </button>
-        </div>
       </div>
 
     </section>
@@ -691,7 +692,7 @@
   </div>
 
   <footer class="footer-bar w-full text-center py-3 text-xs border-t transition-colors duration-300">
-    Created by ToMi with AI · wersja 1.4.2
+    Created by ToMi with AI · wersja 1.4.3
   </footer>
 
   <script>
@@ -796,6 +797,31 @@
           trigger(e);
         }
       });
+    }
+
+    function computeFitScale(angleDeg, cardEl, boxEl) {
+      const normalized = ((angleDeg % 180) + 180) % 180;
+      const isNearVertical = normalized > 25 && normalized < 155;
+      if (!isNearVertical) {
+        return 1;
+      }
+
+      const cardWidth = cardEl ? cardEl.clientWidth : window.innerWidth;
+      const boxHeight = boxEl ? boxEl.scrollHeight : 460;
+      const boxWidth = boxEl ? boxEl.scrollWidth : Math.min(cardWidth, 460);
+      const maxAvail = Math.max(220, Math.min(cardWidth - 36, window.innerHeight * 0.62));
+
+      const rad = (normalized * Math.PI) / 180;
+      const cosA = Math.abs(Math.cos(rad));
+      const sinA = Math.abs(Math.sin(rad));
+
+      const rotatedWidth = boxWidth * cosA + boxHeight * sinA;
+      const rotatedHeight = boxWidth * sinA + boxHeight * cosA;
+      const boundingSide = Math.max(rotatedWidth, rotatedHeight);
+
+      if (boundingSide <= 0) return 0.72;
+      const rawScale = maxAvail / boundingSide;
+      return Math.max(0.45, Math.min(0.88, Number(rawScale.toFixed(2))));
     }
 
     function initAudio() {
@@ -1523,6 +1549,22 @@
       return gameState.players[gameState.activePlayerIndex];
     }
 
+    function applyActiveRotationTransform() {
+      const card = document.getElementById('activePlayerCard');
+      const rotBox = document.getElementById('rotatingTimerBox');
+      if (!rotBox) return;
+
+      const angle = gameState.currentVisualRotation || 0;
+      const scale = computeFitScale(angle, card, rotBox);
+      rotBox.style.transform = `rotate(${angle}deg) scale(${scale})`;
+
+      const normalized = ((angle % 180) + 180) % 180;
+      const isNearVertical = normalized > 25 && normalized < 155;
+      if (card) {
+        card.style.minHeight = isNearVertical ? '380px' : '';
+      }
+    }
+
     function renderActivePlayerUI() {
       const activePlayer = getActivePlayer();
       const card = document.getElementById('activePlayerCard');
@@ -1547,12 +1589,13 @@
       gameState.lastActivePlayerRotationBase = targetBase;
 
       if (card) {
-        card.className = "glass-panel timer-card-rotate rounded-3xl p-5 sm:p-8 text-center relative overflow-hidden player-card-glow border-2 max-w-xl mx-auto w-full";
+        card.className = "glass-panel rounded-3xl p-4 sm:p-7 text-center relative overflow-hidden player-card-glow border-2 max-w-xl mx-auto w-full flex items-center justify-center transition-all duration-300";
         card.style.borderColor = activePlayer.colorHex;
         card.style.backgroundColor = `${activePlayer.colorHex}18`;
         card.style.boxShadow = `0 0 35px 2px ${activePlayer.colorHex}44`;
-        card.style.transform = `rotate(${gameState.currentVisualRotation}deg)`;
       }
+
+      applyActiveRotationTransform();
 
       if (nextTurnBtn) {
         nextTurnBtn.style.backgroundColor = activePlayer.colorHex;
@@ -1738,6 +1781,11 @@
       bindReliableTap(document.getElementById('nextTurnBtn'), () => nextTurn());
       bindReliableTap(document.getElementById('chessP1Card'), () => handleChessCardClick(0));
       bindReliableTap(document.getElementById('chessP2Card'), () => handleChessCardClick(1));
+      window.addEventListener('resize', () => {
+        if (!document.getElementById('gameView').classList.contains('hidden')) {
+          applyActiveRotationTransform();
+        }
+      });
     });
   </script>
 </body>
